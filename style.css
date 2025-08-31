@@ -1,0 +1,119 @@
+@font-face {
+  font-family: "PixelifySans";
+  src: url("assets/font/PixelifySans-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background: url("assets/main_menu.gif") no-repeat center center fixed;
+  background-size: cover;
+
+
+}
+
+img {
+    user-select: none;        /* prevents text selection */
+    -webkit-user-drag: none;  /* prevents dragging on Chrome/Safari */
+    -moz-user-select: none;   /* Firefox */
+    -ms-user-select: none;    /* IE/Edge */
+}
+
+
+/* Menu container */
+#menu {
+  width: 100%;
+  position: relative;
+}
+
+/* Title container */
+#title-container {
+  position: relative; /* allow text to overlay the image */
+  width: 400px; /* same as image width */
+  margin: 10px auto 0 auto; /* horizontally center container */
+  text-align: center; /* center children */
+}
+
+/* Title image */
+#game-title {
+  display: block;
+  width: 100%;
+}
+
+/* Text overlay inside the image */
+#title_name {
+  position: absolute;
+  top: 50%; /* vertical center on image */
+  left: 50%; /* horizontal center */
+  transform: translate(-50%, -50%); /* exact centering */
+  font-family: "PixelifySans", sans-serif;
+  color: black;
+  font-size: 36px;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+  pointer-events: none;
+}
+
+/* Play button directly below title */
+#play-button {
+  display: block;
+  margin: 60px auto 0 auto; /* space below image + center horizontally */
+  width: 200px;
+  padding: 10px 0;
+  /* font-family: "PixelifySans", sans-serif; */
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+#play-button:hover {
+  transform: scale(1.1);
+}
+
+/* Character Selector Styles */
+.carousel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+}
+.carousel-card {
+  width: 300px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+  background: #fff;
+}
+.carousel-card img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.carousel-nav {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+.carousel-nav button {
+  padding: 0.5rem 1.5rem;
+  font-size: 1.2rem;
+  border-radius: 5px;
+  border: none;
+  background: #0078d4;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.carousel-nav button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}

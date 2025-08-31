@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Character Selector</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <h1>Character Selector</h1>
+
+  <div class="carousel-container">
+    <div class="carousel-card" id="carousel-card">
+      <!-- Character card will be rendered here -->
+    </div>
+    <div class="carousel-nav">
+      <button id="prev-btn">&lt; Prev</button>
+      <button id="select-btn">Select</button>
+      <button id="next-btn">Next &gt;</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { characters } from '../assets/js/characters.js';
+
+    let currentIndex = 0;
+
+    const carouselCard = document.getElementById('carousel-card');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const selectBtn = document.getElementById('select-btn');
+
+    function renderCard(index) {
+      const character = characters[index];
+      carouselCard.innerHTML = `
+        <img src="../${character.image}" alt="${character.name}">
+        <h2>${character.name}</h2>
+        <p>${character.flavor}</p>
+        <div class="character-stats">
+          <p>HP: ${character.hp}</p>
+          <p>Difficulty: ${'★'.repeat(character.difficulty)}</p>
+        </div>
+      `;
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = index === characters.length - 1;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderCard(currentIndex);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentIndex < characters.length - 1) {
+        currentIndex++;
+        renderCard(currentIndex);
+      }
+    });
+
+    selectBtn.addEventListener('click', () => {
+      sessionStorage.setItem('selectedCharacter', currentIndex);
+      window.location.href = 'gameplay.html';
+    });
+
+    // Initial render
+    renderCard(currentIndex);
+  </script>
+
+  <script src="../assets/js/cursor.js"></script>
