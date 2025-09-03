@@ -74,46 +74,4 @@ img {
   transform: scale(1.1);
 }
 
-/* Character Selector Styles */
-.carousel-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 2rem;
-}
-.carousel-card {
-  width: 300px;
-  text-align: center;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  margin-bottom: 1rem;
-  background: #fff;
-}
-.carousel-card img {
-  width: 200px;
-  height: 200px;
-  object-fit: contain;
-  border-radius: 8px;
-}
-.carousel-nav {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-bottom: 1rem;
-}
-.carousel-nav button {
-  padding: 0.5rem 1.5rem;
-  font-size: 1.2rem;
-  border-radius: 5px;
-  border: none;
-  background: #0078d4;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.carousel-nav button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
+

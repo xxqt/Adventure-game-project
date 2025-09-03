@@ -1,72 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Character Selector</title>
-  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="character_selector.css">
 </head>
-<body>
 
+<body>
   <h1>Character Selector</h1>
 
-  <div class="carousel-container">
-    <div class="carousel-card" id="carousel-card">
-      <!-- Character card will be rendered here -->
-    </div>
-    <div class="carousel-nav">
-      <button id="prev-btn">&lt; Prev</button>
-      <button id="select-btn">Select</button>
-      <button id="next-btn">Next &gt;</button>
-    </div>
+  <!-- Container where characters will appear -->
+  <div id="character-container" class="character-grid"></div>
+
+  <script>
+    // Directly embedding the JSON data
+    const data = {
+      "characters": [
+        {
+          "name": "Dark Knight",
+          "image": "../assets/characters/dark_knight.png",
+          "hp": 120,
+          "difficulty": 4,
+          "flavor": "A cursed warrior who draws power from pain.",
+          "abilities": [
+            { "name": "Life Drain", "description": "Steal 20 HP from the enemy and heal self." },
+            { "name": "Dark Slash", "description": "Deal 30 damage, but lose 10 HP." }
+          ]
+        },
+        {
+          "name": "Knight",
+          "image": "../assets/characters/knight.png",
+          "hp": 150,
+          "difficulty": 3,
+          "flavor": "A loyal defender who thrives in battle.",
+          "abilities": [
+            { "name": "Shield Bash", "description": "Deal 15 damage and stun the enemy." },
+            { "name": "Defensive Stance", "description": "Reduce incoming damage by 50% for 1 turn." }
+          ]
+        },
+        {
+          "name": "Paladin",
+          "image": "../assets/characters/paladin.png",
+          "hp": 140,
+          "difficulty": 2,
+          "flavor": "A holy warrior who heals allies and smites foes.",
+          "abilities": [
+            { "name": "Holy Smite", "description": "Deal 25 radiant damage." },
+            { "name": "Lay on Hands", "description": "Heal self or ally for 30 HP." }
+          ]
+        },
+        {
+          "name": "Thief",
+          "image": "../assets/characters/thief.png",
+          "hp": 100,
+          "difficulty": 3,
+          "flavor": "A nimble fighter who strikes fast and steals gold.",
+          "abilities": [
+            { "name": "Backstab", "description": "Deal 35 damage if enemy is stunned, else 20." },
+            { "name": "Steal", "description": "Steal 10 gold from the enemy." }
+          ]
+        },
+        {
+          "name": "Witch",
+          "image": "../assets/characters/witch.png",
+          "hp": 90,
+          "difficulty": 5,
+          "flavor": "A master of curses and fire magic.",
+          "abilities": [
+            { "name": "Fireball", "description": "Deal 40 damage." },
+            { "name": "Curse", "description": "Reduce enemy attack by 50% for 2 turns." }
+          ]
+        }
+      ]
+    };
+
+    // Render characters
+    const container = document.getElementById("character-container");
+
+    data.characters.forEach(character => {
+      const card = document.createElement("div");
+      card.classList.add("character-card");
+
+      card.innerHTML = `
+      <img src="${character.image}" alt="${character.name}" class="character-img">
+      <div class="character-info">
+    <h2>${character.name}</h2>
+    <p><strong>HP:</strong> ${character.hp}</p>
+    <p><strong>Difficulty:</strong> ${character.difficulty}</p>
+    <p class="flavor">${character.flavor}</p>
+    <h3>Abilities</h3>
+    <ul>
+      ${character.abilities.map(ability => `
+        <li><strong>${ability.name}:</strong> ${ability.description}</li>
+      `).join("")}
+    </ul>
   </div>
+`;
 
-  <script type="module">
-    import { characters } from '../assets/js/characters.js';
-
-    let currentIndex = 0;
-
-    const carouselCard = document.getElementById('carousel-card');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const selectBtn = document.getElementById('select-btn');
-
-    function renderCard(index) {
-      const character = characters[index];
-      carouselCard.innerHTML = `
-        <img src="../${character.image}" alt="${character.name}">
-        <h2>${character.name}</h2>
-        <p>${character.flavor}</p>
-        <div class="character-stats">
-          <p>HP: ${character.hp}</p>
-          <p>Difficulty: ${'★'.repeat(character.difficulty)}</p>
-        </div>
-      `;
-      prevBtn.disabled = index === 0;
-      nextBtn.disabled = index === characters.length - 1;
-    }
-
-    prevBtn.addEventListener('click', () => {
-      if (currentIndex > 0) {
-        currentIndex--;
-        renderCard(currentIndex);
-      }
+      container.appendChild(card);
     });
-
-    nextBtn.addEventListener('click', () => {
-      if (currentIndex < characters.length - 1) {
-        currentIndex++;
-        renderCard(currentIndex);
-      }
-    });
-
-    selectBtn.addEventListener('click', () => {
-      sessionStorage.setItem('selectedCharacter', currentIndex);
-      window.location.href = 'gameplay.html';
-    });
-
-    // Initial render
-    renderCard(currentIndex);
   </script>
+</body>
 
-  <script src="../assets/js/cursor.js"></script>
+</html>
