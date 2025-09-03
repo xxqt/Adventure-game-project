@@ -15,7 +15,7 @@
   <div id="character-container" class="character-grid"></div>
 
   <script>
-    // Directly embedding the JSON data
+    // characters.js (inline for now)
     const data = {
       "characters": [
         {
@@ -25,41 +25,18 @@
           "difficulty": 4,
           "flavor": "A cursed warrior who draws power from pain.",
           "abilities": [
-            { "name": "Life Drain", "description": "Steal 20 HP from the enemy and heal self." },
-            { "name": "Dark Slash", "description": "Deal 30 damage, but lose 10 HP." }
-          ]
-        },
-        {
-          "name": "Knight",
-          "image": "../assets/characters/knight.png",
-          "hp": 150,
-          "difficulty": 3,
-          "flavor": "A loyal defender who thrives in battle.",
-          "abilities": [
-            { "name": "Shield Bash", "description": "Deal 15 damage and stun the enemy." },
-            { "name": "Defensive Stance", "description": "Reduce incoming damage by 50% for 1 turn." }
-          ]
-        },
-        {
-          "name": "Paladin",
-          "image": "../assets/characters/paladin.png",
-          "hp": 140,
-          "difficulty": 2,
-          "flavor": "A holy warrior who heals allies and smites foes.",
-          "abilities": [
-            { "name": "Holy Smite", "description": "Deal 25 radiant damage." },
-            { "name": "Lay on Hands", "description": "Heal self or ally for 30 HP." }
-          ]
-        },
-        {
-          "name": "Thief",
-          "image": "../assets/characters/thief.png",
-          "hp": 100,
-          "difficulty": 3,
-          "flavor": "A nimble fighter who strikes fast and steals gold.",
-          "abilities": [
-            { "name": "Backstab", "description": "Deal 35 damage if enemy is stunned, else 20." },
-            { "name": "Steal", "description": "Steal 10 gold from the enemy." }
+            {
+              "name": "Life Drain",
+              "damage": 20,
+              "heal": 20,
+              "description": "Steal 20 HP from the enemy and heal self."
+            },
+            {
+              "name": "Dark Slash",
+              "damage": 30,
+              "heal": -10,
+              "description": "Deal 30 damage, but lose 10 HP."
+            }
           ]
         },
         {
@@ -69,12 +46,86 @@
           "difficulty": 5,
           "flavor": "A master of curses and fire magic.",
           "abilities": [
-            { "name": "Fireball", "description": "Deal 40 damage." },
-            { "name": "Curse", "description": "Reduce enemy attack by 50% for 2 turns." }
+            {
+              "name": "Fireball",
+              "damage": 40,
+              "heal": 0,
+              "description": "Deal 40 damage."
+            },
+            {
+              "name": "Curse",
+              "damage": 50,
+              "heal": -10,
+              "description": "Unleash a powerful curse dealing 50 damage."
+            }
+          ]
+        },
+        {
+          "name": "Knight",
+          "image": "../assets/characters/knight.png",
+          "hp": 150,
+          "difficulty": 2,
+          "flavor": "A noble warrior with unwavering defense.",
+          "abilities": [
+            {
+              "name": "Shield Bash",
+              "damage": 15,
+              "heal": 0,
+              "description": "Stun the enemy and deal 15 damage."
+            },
+            {
+              "name": "Guardian’s Oath",
+              "damage": 0,
+              "heal": 30,
+              "description": "Heal 30 HP by calling upon inner strength."
+            }
+          ]
+        },
+        {
+          "name": "Paladin",
+          "image": "../assets/characters/paladin.png",
+          "hp": 130,
+          "difficulty": 3,
+          "flavor": "A holy knight blessed with divine powers.",
+          "abilities": [
+            {
+              "name": "Holy Strike",
+              "damage": 25,
+              "heal": 0,
+              "description": "Smite the enemy with holy light for 25 damage."
+            },
+            {
+              "name": "Divine Blessing",
+              "damage": 0,
+              "heal": 40,
+              "description": "Restore 40 HP with divine energy."
+            }
+          ]
+        },
+        {
+          "name": "Thief",
+          "image": "../assets/characters/thief.png",
+          "hp": 100,
+          "difficulty": 4,
+          "flavor": "A swift rogue who relies on agility and cunning.",
+          "abilities": [
+            {
+              "name": "Backstab",
+              "damage": 35,
+              "heal": 0,
+              "description": "Deal 35 damage with a precise strike."
+            },
+            {
+              "name": "Steal",
+              "damage": 10,
+              "heal": 10,
+              "description": "Steal 10 HP and small loot from the enemy."
+            }
           ]
         }
       ]
     };
+    const buttonSound = new Audio("../assets/sound/button_sound.mp3");
 
     // Render characters
     const container = document.getElementById("character-container");
@@ -84,24 +135,45 @@
       card.classList.add("character-card");
 
       card.innerHTML = `
-      <img src="${character.image}" alt="${character.name}" class="character-img">
-      <div class="character-info">
-    <h2>${character.name}</h2>
-    <p><strong>HP:</strong> ${character.hp}</p>
-    <p><strong>Difficulty:</strong> ${character.difficulty}</p>
-    <p class="flavor">${character.flavor}</p>
-    <h3>Abilities</h3>
-    <ul>
-      ${character.abilities.map(ability => `
-        <li><strong>${ability.name}:</strong> ${ability.description}</li>
-      `).join("")}
-    </ul>
-  </div>
-`;
+        <img src="${character.image}" alt="${character.name}" class="character-img">
+        <div class="character-info">
+          <h2>${character.name}</h2>
+          <p><strong>HP:</strong> ${character.hp}</p>
+          <p><strong>Difficulty:</strong> ${character.difficulty}</p>
+          <p class="flavor">${character.flavor}</p>
+          <h3>Abilities</h3>
+          <ul>
+            ${character.abilities.map(ability => `
+              <li><strong>${ability.name}:</strong> ${ability.description}</li>
+            `).join("")}
+          </ul>
+          <img src="../assets/sprites/select_button.png" 
+               class="select-btn" 
+               alt="Select Button">
+        </div> 
+      `;
+
+      const selectBtn = card.querySelector(".select-btn");
+
+      // Pressed effect
+      selectBtn.addEventListener("mousedown", () => {
+        selectBtn.src = "../assets/sprites/select_button_pressed.png";
+        buttonSound.play();
+      });
+
+      // Release → pick character + go to overworld
+      document.addEventListener("mouseup", () => {
+        if (selectBtn.src.includes("pressed")) {
+          selectBtn.src = "../assets/sprites/select_button.png";
+          localStorage.setItem("selectedCharacter", JSON.stringify(character));
+          window.location.href = "overworld.html";
+        }
+      });
 
       container.appendChild(card);
     });
   </script>
-</body>
 
+  <script src="assets/js/cursor.js"></script>
+</body>
 </html>
