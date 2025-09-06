@@ -13,6 +13,7 @@
 
   <!-- Container where characters will appear -->
   <div id="character-container" class="character-grid"></div>
+  <script src="../assets/js/characters.js"></script>
 
   <script>
     // characters.js (inline for now)
@@ -126,8 +127,6 @@
       ]
     };
     const buttonSound = new Audio("../assets/sound/button_sound.mp3");
-
-    // Render characters
     const container = document.getElementById("character-container");
 
     data.characters.forEach(character => {
@@ -162,19 +161,33 @@
       });
 
       // Release → pick character + go to overworld
-      document.addEventListener("mouseup", () => {
-        if (selectBtn.src.includes("pressed")) {
-          selectBtn.src = "../assets/sprites/select_button.png";
-          localStorage.setItem("selectedCharacter", JSON.stringify(character));
-          window.location.href = "overworld.html";
-        }
+      selectBtn.addEventListener("mouseup", () => {
+        selectBtn.src = "../assets/sprites/select_button.png";
+        // Pass character name via query string
+        const charData = encodeURIComponent(JSON.stringify(character));
+        // window.location.href = `overworld.html?character=${charData}`;
+        window.location.href = `battle.html?character=${charData}`;
+
       });
 
       container.appendChild(card);
     });
   </script>
 
-  <script src="assets/js/cursor.js"></script>
+  <div id="character-info"></div>
+
+<script>
+  const infoDiv = document.getElementById("character-info");
+
+  infoDiv.innerHTML = `
+    <h2>${character.name}</h2>
+    <p>HP: ${character.hp}</p>
+    <p>Power: ${character.power}</p>
+  `;
+</script>
+
+
+  <script src="../assets/js/cursor.js"></script>
 </body>
 
 </html>

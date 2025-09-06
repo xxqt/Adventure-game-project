@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -9,58 +9,107 @@
       font-family: Arial, sans-serif;
       background: #222;
       color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 20px;
-    }
-    .character-card {
-      background: #333;
-      padding: 20px;
-      border-radius: 10px;
-      margin-top: 20px;
-      width: 300px;
       text-align: center;
+      padding: 30px;
     }
-    .character-card img {
+    .character-display {
+      border: 2px solid #fff;
+      border-radius: 10px;
+      padding: 20px;
+      display: inline-block;
+      background: #333;
+    }
+    .character-display img {
       width: 150px;
-      height: auto;
-    }
-    h1 {
-      margin-bottom: 10px;
+      display: block;
+      margin: 0 auto 15px;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to the Overworld!</h1>
-  <div id="selected-character" class="character-card">
-    <p>Loading character...</p>
-  </div>
+  <h1>Overworld</h1>
+  <div id="character-info" class="character-display"></div>
 
   <script>
-    // Retrieve the selected character from localStorage
-    const selectedCharacterJSON = localStorage.getItem("selectedCharacter");
+    // 1. Get the query string (?character=...)
+    const params = new URLSearchParams(window.location.search);
+    const charData = params.get("character");
 
-    const container = document.getElementById("selected-character");
+    if (charData) {
+      // 2. Decode and parse JSON
+      const character = JSON.parse(decodeURIComponent(charData));
 
-    if (selectedCharacterJSON) {
-      const character = JSON.parse(selectedCharacterJSON);
-
+      // 3. Render to the page
+      const container = document.getElementById("character-info");
       container.innerHTML = `
-        <h2>${character.name}</h2>
         <img src="${character.image}" alt="${character.name}">
+        <h2>${character.name}</h2>
         <p><strong>HP:</strong> ${character.hp}</p>
         <p><strong>Difficulty:</strong> ${character.difficulty}</p>
-        <p class="flavor">${character.flavor}</p>
         <h3>Abilities</h3>
         <ul>
-          ${character.abilities.map(a => `<li><strong>${a.name}:</strong> ${a.description}</li>`).join('')}
+          ${character.abilities.map(ability => `
+            <li><strong>${ability.name}:</strong> ${ability.description}</li>
+          `).join("")}
         </ul>
+        <p class="flavor"><em>${character.flavor}</em></p>
       `;
     } else {
-      container.innerHTML = "<p>No character selected!</p>";
+      document.getElementById("character-info").innerHTML = "<p>No character selected!</p>";
     }
   </script>
 </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <title>Overworld</title> -->
+  <div id="title-container">
+    <img id="overworld-title" src="../assets/sprites/title_bar.png" alt="Overworld Title">
+    <span id="title_name">Overworld</span>
+  </div>
+</head>
+
+<body>
+
+          <div id="play-container">
+            <img id="play-button" src="assets/sprites/play_button.png" alt="Play Button">
+        </div>
+
+   <script>
+    const playButton = document.getElementById("play-button");
+    let isHolding = false;
+
+    const buttonSound = new Audio("assets/sound/button_sound.mp3");
+
+
+    // When pressed down
+    playButton.addEventListener("mousedown", function () {
+        playButton.src = "assets/sprites/play_button_pressed.png";
+
+        buttonSound.play();
+
+        isHolding = true;
+
+    });
+
+    // When released anywhere
+    document.addEventListener("mouseup", function () {
+        if (isHolding) {
+            playButton.src = "assets/sprites/button.png";
+            isHolding = false;
+            window.location.href = "game/character_selector.html";
+        }
+    });
+
+
+</script>
+
+  <script src="../assets/js/cursor.js"></script>
+</body>
+
 </html>

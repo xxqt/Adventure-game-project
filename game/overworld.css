@@ -1,0 +1,22 @@
+@font-face {
+  font-family: "PixelifySans";
+  src: url("assets/font/PixelifySans-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background: url("../assets/overworld.png") no-repeat center center fixed;
+  background-size: cover;
+
+
+}
+#title-container {
+  position: relative; /* allow text to overlay the image */
+  width: 400px; /* same as image width */
+  margin: 10px auto 0 auto; /* horizontally center container */
+  text-align: center; /* center children */
+}
