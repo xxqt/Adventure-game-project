@@ -57,7 +57,7 @@ const data = {
           "description": "Stun the enemy and deal 15 damage."
         },
         {
-          "name": "Guardian’s Oath",
+          "name": "Guardian's Oath",
           "damage": 0,
           "heal": 30,
           "description": "Heal 30 HP by calling upon inner strength."

@@ -67,47 +67,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- <title>Overworld</title> -->
+  <title>Overworld</title>
+  <link rel="stylesheet" href="overworld.css">
+</head>
+
+<body>
   <div id="title-container">
     <img id="overworld-title" src="../assets/sprites/title_bar.png" alt="Overworld Title">
     <span id="title_name">Overworld</span>
   </div>
-</head>
 
-<body>
+  <div id="play-container">
+    <img id="play-button" src="../assets/sprites/play_button.png" alt="Play Button">
+  </div>
 
-          <div id="play-container">
-            <img id="play-button" src="assets/sprites/play_button.png" alt="Play Button">
-        </div>
-
-   <script>
+  <script>
     const playButton = document.getElementById("play-button");
     let isHolding = false;
 
-    const buttonSound = new Audio("assets/sound/button_sound.mp3");
+    const buttonSound = new Audio("../assets/sound/button_sound.mp3");
 
 
     // When pressed down
     playButton.addEventListener("mousedown", function () {
-        playButton.src = "assets/sprites/play_button_pressed.png";
+      playButton.src = "../assets/sprites/play_button_pressed.png";
 
-        buttonSound.play();
+      buttonSound.play();
 
-        isHolding = true;
+      isHolding = true;
 
     });
 
     // When released anywhere
     document.addEventListener("mouseup", function () {
-        if (isHolding) {
-            playButton.src = "assets/sprites/button.png";
-            isHolding = false;
-            window.location.href = "game/character_selector.html";
-        }
+      if (isHolding) {
+        playButton.src = "../assets/sprites/play_button.png";
+        isHolding = false;
+        window.location.href = "character_selector.html";
+      }
     });
 
 
-</script>
+  </script>
 
   <script src="../assets/js/cursor.js"></script>
 </body>

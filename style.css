@@ -9,17 +9,19 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
-  background: url("assets/main_menu.gif") no-repeat center center fixed;
+  background: url("assets/main_menu.gif") no-repeat center fixed;
   background-size: cover;
-
-
 }
 
 img {
-    user-select: none;        /* prevents text selection */
-    -webkit-user-drag: none;  /* prevents dragging on Chrome/Safari */
-    -moz-user-select: none;   /* Firefox */
-    -ms-user-select: none;    /* IE/Edge */
+  user-select: none;
+  /* prevents text selection */
+  -webkit-user-drag: none;
+  /* prevents dragging on Chrome/Safari */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* IE/Edge */
 }
 
 
@@ -31,10 +33,14 @@ img {
 
 /* Title container */
 #title-container {
-  position: relative; /* allow text to overlay the image */
-  width: 400px; /* same as image width */
-  margin: 10px auto 0 auto; /* horizontally center container */
-  text-align: center; /* center children */
+  position: relative;
+  /* allow text to overlay the image */
+  width: 400px;
+  /* same as image width */
+  margin: 10px auto 0 auto;
+  /* horizontally center container */
+  text-align: center;
+  /* center children */
 }
 
 /* Title image */
@@ -46,9 +52,12 @@ img {
 /* Text overlay inside the image */
 #title_name {
   position: absolute;
-  top: 50%; /* vertical center on image */
-  left: 50%; /* horizontal center */
-  transform: translate(-50%, -50%); /* exact centering */
+  top: 50%;
+  /* vertical center on image */
+  left: 50%;
+  /* horizontal center */
+  transform: translate(-50%, -50%);
+  /* exact centering */
   font-family: "PixelifySans", sans-serif;
   color: black;
   font-size: 36px;
@@ -61,7 +70,8 @@ img {
 /* Play button directly below title */
 #play-button {
   display: block;
-  margin: 60px auto 0 auto; /* space below image + center horizontally */
+  margin: 60px auto 0 auto;
+  /* space below image + center horizontally */
   width: 200px;
   padding: 10px 0;
   /* font-family: "PixelifySans", sans-serif; */
@@ -73,5 +83,3 @@ img {
 #play-button:hover {
   transform: scale(1.1);
 }
-
-
