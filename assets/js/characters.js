@@ -5,6 +5,7 @@ const data = {
       "name": "Dark Knight",
       "image": "../assets/characters/dark_knight.png",
       "hp": 120,
+      "gold": 50,
       "difficulty": 4,
       "flavor": "A cursed warrior who draws power from pain.",
       "abilities": [
@@ -26,6 +27,7 @@ const data = {
       "name": "Witch",
       "image": "../assets/characters/witch.png",
       "hp": 90,
+      "gold": 60,
       "difficulty": 5,
       "flavor": "A master of curses and fire magic.",
       "abilities": [
@@ -47,6 +49,7 @@ const data = {
       "name": "Knight",
       "image": "../assets/characters/knight.png",
       "hp": 150,
+      "gold": 40,
       "difficulty": 2,
       "flavor": "A noble warrior with unwavering defense.",
       "abilities": [
@@ -68,6 +71,7 @@ const data = {
       "name": "Paladin",
       "image": "../assets/characters/paladin.png",
       "hp": 130,
+      "gold": 70,
       "difficulty": 3,
       "flavor": "A holy knight blessed with divine powers.",
       "abilities": [
@@ -89,6 +93,7 @@ const data = {
       "name": "Thief",
       "image": "../assets/characters/thief.png",
       "hp": 100,
+      "gold": 100,
       "difficulty": 4,
       "flavor": "A swift rogue who relies on agility and cunning.",
       "abilities": [
