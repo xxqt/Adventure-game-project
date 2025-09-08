@@ -28,9 +28,9 @@ const enemies = {
     {
       "name": "Flying Eye",
       "animations": {
-        "idle": "../assets/enemies/fly_eye/flying_eye_idle.gif",
-        "attack": "../assets/enemies/fly_eye/flying_eye_attack.gif",
-        "death": "../assets/enemies/fly_eye/flying_eye_death.gif"
+        "idle": "../assets/enemies/flying eye/flying_eye_idle.gif",
+        "attack": "../assets/enemies/flying eye/flying_eye_attack.gif",
+        "death": "../assets/enemies/flying eye/flying_eye_death.gif"
       },
       "hp": 40,
       "difficulty": 2,
