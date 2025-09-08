@@ -2,7 +2,11 @@ const enemies = {
   "enemies": [
     {
       "name": "Goblin",
-      "image": "../assets/enemies/goblin.gif",
+      "animations": {
+        "idle": "../assets/enemies/goblin/goblin_idle.gif",
+        "attack": "../assets/enemies/goblin/goblin_attack.gif",
+        "death": "../assets/enemies/goblin/goblin_death.gif"
+      },
       "hp": 50,
       "difficulty": 1,
       "flavor": "A mischievous creature that relies on quick strikes.",
@@ -22,44 +26,52 @@ const enemies = {
       ]
     },
     {
-      "name": "Orc",
-      "image": "../assets/enemies/orc.png",
-      "hp": 100,
-      "difficulty": 3,
-      "flavor": "A brutish warrior with overwhelming strength.",
+      "name": "Flying Eye",
+      "animations": {
+        "idle": "../assets/enemies/flying eye/flying_eye_idle.gif",
+        "attack": "../assets/enemies/flying eye/flying_eye_attack.gif",
+        "death": "../assets/enemies/flying eye/flying_eye_death.gif"
+      },
+      "hp": 40,
+      "difficulty": 2,
+      "flavor": "A creepy flying eye that attacks from above.",
       "abilities": [
         {
-          "name": "Axe Swing",
-          "damage": 20,
+          "name": "Eye Beam",
+          "damage": 12,
           "heal": 0,
-          "description": "A wide swing that deals heavy damage."
+          "description": "Shoots a piercing beam from its eye."
         },
         {
-          "name": "War Cry",
-          "damage": 0,
-          "heal": 15,
-          "description": "Restores some health by rallying with rage."
+          "name": "Swoop Attack",
+          "damage": 8,
+          "heal": 0,
+          "description": "Dives quickly at the opponent to scratch them."
         }
       ]
     },
     {
-      "name": "Dragon",
-      "image": "../assets/enemies/dragon.png",
-      "hp": 300,
-      "difficulty": 5,
-      "flavor": "A legendary beast that breathes fire upon its foes.",
+      "name": "Skeleton",
+      "animations": {
+        "idle": "../assets/enemies/skeleton/skeleton_idle.gif",
+        "attack": "../assets/enemies/skeleton/skeleton_attack.gif",
+        "death": "../assets/enemies/skeleton/skeleton_death.gif"
+      },
+      "hp": 60,
+      "difficulty": 3,
+      "flavor": "An animated skeleton wielding a rusty sword.",
       "abilities": [
         {
-          "name": "Fire Breath",
-          "damage": 50,
+          "name": "Bone Slash",
+          "damage": 15,
           "heal": 0,
-          "description": "Unleashes a torrent of flames."
+          "description": "A swing of its sword made of bones."
         },
         {
-          "name": "Tail Smash",
-          "damage": 40,
+          "name": "Rattle",
+          "damage": 5,
           "heal": 0,
-          "description": "Whips its tail with crushing force."
+          "description": "Shakes bones to intimidate the enemy."
         }
       ]
     }

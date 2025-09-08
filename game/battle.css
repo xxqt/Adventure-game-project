@@ -1,0 +1,132 @@
+@font-face {
+  font-family: "PixelifySans";
+  src: url("../assets/font/PixelifySans-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: url("../assets/overworld.png") no-repeat center center fixed;
+  background-size: cover;
+  font-family: "PixelifySans", sans-serif;
+  color: white;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.title {
+  margin-top: 20px;
+}
+
+#EnemyInfo {
+  margin-top: 20px;
+}
+
+#enemy-info {
+  background-image: url("../assets/sprites/card_background.png");
+  background-size: contain; /* Scales image to cover entire div */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat; /* Prevents image repetition */
+  padding: 20px; /* Add some padding so text isn't at edges */
+  border-radius: 10px; /* Optional: rounded corners */
+  font-family: "PixelifySans", sans-serif; /* Font family */
+}
+
+#console {
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  border: 2px solid white; /* White border */
+  border-radius: 10px; /* Rounded corners */
+  padding: 10px; /* Padding inside the console */
+  margin: 20px auto; /* Center horizontally with margin */
+  width: 80%; /* Width of the console */
+  max-width: 600px; /* Max width for larger screens */
+  color: white; /* Text color */
+  font-family: "PixelifySans", sans-serif; /* Font family */
+  font-size: 18px; /* Font size */
+  text-align: left; /* Left align text */
+}
+
+#ability-buttons {
+  display: flex; /* Use flexbox for better layout */
+  justify-content: center; /* Center buttons horizontally */
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 20px; /* Space between buttons */
+  margin: 60px auto 0 auto; /* Space below image + center horizontally */
+  padding: 10px 0;
+  font-size: 24px;
+}
+
+.attack-btn-wrapper {
+  position: relative;
+  width: 200px; /* Match button width */
+}
+
+.ability-wrapper {
+  position: relative;
+  display: inline-block;
+  margin: 5px;
+}
+
+.ability-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 14px; /* Smaller text */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  pointer-events: none; /* Lets clicks pass through to the button */
+  user-select: none;
+  text-align: center;
+  z-index: 1; /* Ensure text appears above button */
+}
+
+.attack-btn {
+  background-image: url('../assets/sprites/select_button.png');
+  background-size: contain; /* Show full button shape without cropping */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: transparent; /* Make background transparent */
+  width: 200px; /* Set your button dimensions */
+  height: 80px; /* Increased height for better proportion */
+  border: none;
+  border-radius: 0; /* Remove border radius to avoid clipping */
+  color: white; /* For text over the image */
+  font-family: "PixelifySans", sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  position: relative;
+  overflow: visible;
+}
+
+.attack-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  filter: brightness(1.1);
+}
+
+.attack-btn:active {
+  transform: translateY(0) scale(0.98);
+  filter: brightness(0.9);
+}
+
+.attack-btn:disabled {
+  filter: grayscale(1) brightness(0.6);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Additional styles for better responsiveness */
+@media (max-width: 768px) {
+  #ability-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
