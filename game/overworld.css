@@ -1,6 +1,6 @@
 @font-face {
   font-family: "PixelifySans";
-  src: url("assets/font/PixelifySans-Regular.ttf") format("truetype");
+  src: url("../assets/font/PixelifySans-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -11,12 +11,34 @@ body {
   height: 100vh;
   background: url("../assets/overworld.png") no-repeat center center fixed;
   background-size: cover;
-
-
+  font-family: "PixelifySans", sans-serif; /* apply to entire page */
 }
+
+h1, h2, p {
+  font-family: "PixelifySans", sans-serif; /* force PixelifySans on headings & text */
+}
+
 #title-container {
   position: relative; /* allow text to overlay the image */
   width: 400px; /* same as image width */
   margin: 10px auto 0 auto; /* horizontally center container */
   text-align: center; /* center children */
+  font-family: "PixelifySans", sans-serif;
+}
+
+.location-buttons {
+  display: flex;
+  flex-direction: column; /* stack vertically */
+  align-items: flex-start; /* align left */
+  gap: 10px; /* space between buttons */
+  margin-top: 20px;
+  font-family: "PixelifySans", sans-serif;
+}
+
+.location-buttons button {
+  width: 200px;   /* make them the same width */
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  font-family: "PixelifySans", sans-serif;
 }

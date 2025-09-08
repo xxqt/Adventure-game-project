@@ -1,115 +1,56 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Overworld</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #222;
-      color: #fff;
-      text-align: center;
-      padding: 30px;
-    }
-    .character-display {
-      border: 2px solid #fff;
-      border-radius: 10px;
-      padding: 20px;
-      display: inline-block;
-      background: #333;
-    }
-    .character-display img {
-      width: 150px;
-      display: block;
-      margin: 0 auto 15px;
-    }
-  </style>
-</head>
-<body>
-  <h1>Overworld</h1>
-  <div id="character-info" class="character-display"></div>
-
-  <script>
-    // 1. Get the query string (?character=...)
-    const params = new URLSearchParams(window.location.search);
-    const charData = params.get("character");
-
-    if (charData) {
-      // 2. Decode and parse JSON
-      const character = JSON.parse(decodeURIComponent(charData));
-
-      // 3. Render to the page
-      const container = document.getElementById("character-info");
-      container.innerHTML = `
-        <img src="${character.image}" alt="${character.name}">
-        <h2>${character.name}</h2>
-        <p><strong>HP:</strong> ${character.hp}</p>
-        <p><strong>Difficulty:</strong> ${character.difficulty}</p>
-        <h3>Abilities</h3>
-        <ul>
-          ${character.abilities.map(ability => `
-            <li><strong>${ability.name}:</strong> ${ability.description}</li>
-          `).join("")}
-        </ul>
-        <p class="flavor"><em>${character.flavor}</em></p>
-      `;
-    } else {
-      document.getElementById("character-info").innerHTML = "<p>No character selected!</p>";
-    }
-  </script>
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- <title>Overworld</title> -->
-  <div id="title-container">
-    <img id="overworld-title" src="../assets/sprites/title_bar.png" alt="Overworld Title">
-    <span id="title_name">Overworld</span>
-  </div>
+  <title>Overworld</title>
+  <link rel="stylesheet" href="overworld.css">
 </head>
 
 <body>
+  <h1>Overworld</h1>
 
-          <div id="play-container">
-            <img id="play-button" src="assets/sprites/play_button.png" alt="Play Button">
-        </div>
+  <div id="character-display"></div>
 
-   <script>
-    const playButton = document.getElementById("play-button");
-    let isHolding = false;
+  <!-- Buttons to go to new areas -->
+  <div class="location-buttons">
+    <button id="forestBtn">Go to Forest</button>
+    <button id="dungeonBtn">Enter Dungeon</button>
+    <button id="templeBtn">Visit Temple</button>
+  </div>
+  <script>
+    // 1. Get the query string (?character=...)
+    const params = new URLSearchParams(window.location.search);
+    const charData = params.get("character");
 
-    const buttonSound = new Audio("assets/sound/button_sound.mp3");
+    let character = null;
+    if (charData) {
+      // 2. Decode and parse JSON
+      character = JSON.parse(decodeURIComponent(charData));
 
+      // 3. Show character info
+      const display = document.getElementById("character-display");
+      display.innerHTML = `
+        <h2>${character.name}</h2>
+        <p>HP: ${character.hp}</p>
+        <p>flavor: ${character.flavor}</p>
+        <p>difficulty: ${character.difficulty}</p>
+      `;
+    }
 
-    // When pressed down
-    playButton.addEventListener("mousedown", function () {
-        playButton.src = "assets/sprites/play_button_pressed.png";
+    // 4. Send the character data forward
+    function goTo(location) {
+      if (!character) return;
+      const data = encodeURIComponent(JSON.stringify(character));
+      window.location.href = `${location}.html?character=${data}`;
+    }
 
-        buttonSound.play();
-
-        isHolding = true;
-
-    });
-
-    // When released anywhere
-    document.addEventListener("mouseup", function () {
-        if (isHolding) {
-            playButton.src = "assets/sprites/button.png";
-            isHolding = false;
-            window.location.href = "game/character_selector.html";
-        }
-    });
-
-
-</script>
-
-  <script src="../assets/js/cursor.js"></script>
+    // 5. Button click listeners
+    document.getElementById("forestBtn").addEventListener("click", () => goTo("forest"));
+    document.getElementById("dungeonBtn").addEventListener("click", () => goTo("dungeon"));
+    document.getElementById("templeBtn").addEventListener("click", () => goTo("temple"));
+  </script>
 </body>
 
 </html>
