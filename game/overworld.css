@@ -9,7 +9,6 @@ body {
   font-family: "PixelifySans";
   margin: 0;
   padding: 0;
-  height: 100vh;
   background: url("../assets/overworld.png") no-repeat center center fixed;
   background-size: cover;
 }
@@ -27,7 +26,30 @@ img {
   width: 400px;
   /* same as image width */
   margin: 10px auto 0 auto;
-  /* horizontally center container */
+  text-align: center;
+}
+
+#overworld-title {
+  display: block;
+  width: 80%;
+  height: auto;
+  transform: translate(12%);
+}
+
+#title_name {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: "PixelifySans", sans-serif;
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+  text-align: center;
+  pointer-events: none;
+}
+
+#play-container {
   text-align: center;
   /* center children */
 }
