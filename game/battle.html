@@ -44,7 +44,8 @@
 
         if (charData) {
             const character = JSON.parse(decodeURIComponent(charData));
-            playerHP = character.hp;
+            playerHP = character.currentHp;
+            playerMaxHP = character.maxHp;
             playerAbilities = character.abilities;
             playerName = character.name;
         }
@@ -136,7 +137,8 @@
         // Battle logic functions
         // -------------------------
         function move(name, damage, heal) {
-            playerHP += heal;
+            // Apply healing with proper cap at maxHp
+            playerHP = Math.min(playerHP + heal, playerMaxHP);
             enemyHP -= damage;
 
             if (playerHP < 0) playerHP = 0;
@@ -209,11 +211,22 @@
         function checkBattleOutcome() {
             if (playerHP <= 0) {
                 document.getElementById('battleText').innerText = "You were defeated!";
+                disableAttackButtons();
             } else if (enemyHP <= 0) {
                 enemyImage = randomEnemy.animations.death;
                 updateEnemyDisplay();
                 document.getElementById('battleText').innerText = `You defeated the ${enemyName}!`;
+                disableAttackButtons();
             }
+        }
+
+        function disableAttackButtons() {
+            const buttons = document.querySelectorAll('.attack-btn');
+            buttons.forEach(button => {
+                button.disabled = true;
+                button.style.opacity = '0.5';
+                button.style.cursor = 'not-allowed';
+            });
         }
 
         // Initial render
@@ -225,8 +238,4 @@
 
 </body>
 
-</html> 
-
-
-
- 
+</html>

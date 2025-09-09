@@ -12,9 +12,9 @@
     <!-- Menu Container -->
     <div id="menu">
         <!-- Title -->
-         <div id="title-container">
-        <img id="game-title" src="assets/sprites/title.png" alt="Game Title">
-        <span id="title_name">Adventure Game</span>
+        <div id="title-container">
+            <img id="game-title" src="assets/sprites/title.png" alt="Game Title">
+            <span id="title_name">Adventure Game</span>
         </div>
         <!-- Play Button -->
         <div id="play-container">
@@ -22,37 +22,38 @@
         </div>
     </div>
 
-<script>
-    const playButton = document.getElementById("play-button");
-    let isHolding = false;
+    <script>
+        const playButton = document.getElementById("play-button");
+        let isHolding = false;
 
-    const buttonSound = new Audio("assets/sound/button_sound.mp3");
-
-
-    // When pressed down
-    playButton.addEventListener("mousedown", function () {
-        playButton.src = "assets/sprites/play_button_pressed.png";
-
-        buttonSound.play();
-
-        isHolding = true;
-
-    });
-
-    // When released anywhere
-    document.addEventListener("mouseup", function () {
-        if (isHolding) {
-            playButton.src = "assets/sprites/button.png";
-            isHolding = false;
-            window.location.href = "game/character_selector.html";
-        }
-    });
+        const buttonSound = new Audio("assets/sound/button_sound.mp3");
 
 
-</script>
+        // When pressed down
+        playButton.addEventListener("mousedown", function () {
+            playButton.src = "assets/sprites/play_button_pressed.png";
 
-<script src="assets/js/cursor.js"></script>
+            buttonSound.play();
+
+            isHolding = true;
+
+        });
+
+        // When released anywhere
+        document.addEventListener("mouseup", function () {
+            if (isHolding) {
+                playButton.src = "assets/sprites/button.png";
+                isHolding = false;
+                window.location.href = "game/character_selector.html";
+            }
+        });
+
+
+    </script>
+
+    <script src="assets/js/cursor.js"></script>
 
 
 </body>
+
 </html>
