@@ -4,8 +4,9 @@ const data = {
     {
       "name": "Dark Knight",
       "image": "../assets/characters/dark_knight.png",
-      "hp": 120,
-      "gold": 50,
+      "maxHp": 120,
+      "currentHp": 120,
+      "gold": 300,
       "difficulty": 4,
       "flavor": "A cursed warrior who draws power from pain.",
       "abilities": [
@@ -26,7 +27,8 @@ const data = {
     {
       "name": "Witch",
       "image": "../assets/characters/witch.png",
-      "hp": 90,
+      "maxHp": 90,
+      "currentHp": 90,
       "gold": 60,
       "difficulty": 5,
       "flavor": "A master of curses and fire magic.",
@@ -48,7 +50,8 @@ const data = {
     {
       "name": "Knight",
       "image": "../assets/characters/knight.png",
-      "hp": 150,
+      "maxHp": 150,
+      "currentHp": 150,
       "gold": 40,
       "difficulty": 2,
       "flavor": "A noble warrior with unwavering defense.",
@@ -70,7 +73,8 @@ const data = {
     {
       "name": "Paladin",
       "image": "../assets/characters/paladin.png",
-      "hp": 130,
+      "maxHp": 130,
+      "currentHp": 130,
       "gold": 70,
       "difficulty": 3,
       "flavor": "A holy knight blessed with divine powers.",
@@ -92,7 +96,8 @@ const data = {
     {
       "name": "Thief",
       "image": "../assets/characters/thief.png",
-      "hp": 100,
+      "maxHp": 100,
+      "currentHp": 100,
       "gold": 100,
       "difficulty": 4,
       "flavor": "A swift rogue who relies on agility and cunning.",
@@ -113,3 +118,53 @@ const data = {
     }
   ]
 };
+
+// Utility functions for HP management
+function healCharacter(character, healAmount) {
+  if (!character) return false;
+
+  const currentHp = character.currentHp;
+  const maxHp = character.maxHp;
+
+  // Calculate new HP, ensuring it doesn't exceed max
+  const newHp = Math.min(currentHp + healAmount, maxHp);
+  character.currentHp = newHp;
+
+  // Return the actual amount healed
+  return newHp - currentHp;
+}
+
+function damageCharacter(character, damageAmount) {
+  if (!character) return false;
+
+  const currentHp = character.currentHp;
+
+  // Calculate new HP, ensuring it doesn't go below 0
+  const newHp = Math.max(currentHp - damageAmount, 0);
+  character.currentHp = newHp;
+
+  // Return the actual damage dealt
+  return currentHp - newHp;
+}
+
+function increaseMaxHp(character, bonusHp) {
+  if (!character) return false;
+
+  // Increase max HP
+  character.maxHp = character.maxHp + bonusHp;
+
+  // Also increase current HP by the same amount
+  character.currentHp = character.currentHp + bonusHp;
+
+  return true;
+}
+
+function getHpStatus(character) {
+  if (!character) return { current: 0, max: 0, percentage: 0 };
+
+  const current = character.currentHp;
+  const max = character.maxHp;
+  const percentage = Math.round((current / max) * 100);
+
+  return { current, max, percentage };
+}
