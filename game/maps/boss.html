@@ -4,25 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <title>Battle Screen</title>
-    <link rel="stylesheet" href="battle.css">
+    <link rel="stylesheet" href="boss.css">
 </head>
 
 <body>
     <h1>Battle Screen</h1>
 
-    <script src="../assets/js/enemies.js"></script>
+
+
+    <script src="../assets/js/boss.js"></script>
 
     <div id="enemy-info">
         <h2 id="enemy-name"></h2>
         <p>HP: <span id="enemy-hp"></span></p>
         <img id="enemy-image" src="" alt="Enemy Image" width="800">
-        <p>Gold: <span id="enemy-gold"></span></p> <!-- Show enemy gold -->
     </div>
 
     <div id="character-info">
         <h2 id="player-name"></h2>
         <p>HP: <span id="player-hp"></span></p>
-        <p>Gold: <span id="gold"></span></p>
     </div>
 
     <div id="console">
@@ -38,21 +38,15 @@
         <button class="attack-btn" onclick="playerAttack(1)">Attack 2</button>
     </div>
 
-    <div id="special-button-container" style="display: none;"></div>
-
     <script>
         const params = new URLSearchParams(window.location.search);
         const charData = params.get("character");
-
-        let enemyDefeated = false;
-        let playerDefeated = false;
 
         if (charData) {
             const character = JSON.parse(decodeURIComponent(charData));
             playerHP = character.hp;
             playerAbilities = character.abilities;
             playerName = character.name;
-            playerGold = character.gold;
         }
 
         function displayAbilityNames() {
@@ -88,13 +82,11 @@
         const enemyAbilities = randomEnemy.abilities;
         let enemyImage = randomEnemy.animations.idle;
         const enemyFlavor = randomEnemy.flavor;
-        let enemyGold = randomEnemy.gold || 0; // Get enemy gold value
 
         document.getElementById('enemy-name').textContent = enemyName;
         document.getElementById('enemy-hp').textContent = enemyHP;
         document.getElementById('battleText').textContent = `A wild ${enemyName} appears! ${enemyFlavor}`;
         document.getElementById('enemy-image').src = enemyImage;
-        document.getElementById('enemy-gold').textContent = enemyGold; // Display enemy gold
 
         // -------------------------
         // Initialize displays
@@ -102,7 +94,6 @@
         // Update player display
         document.getElementById('player-name').textContent = playerName;
         document.getElementById('player-hp').textContent = playerHP;
-        document.getElementById('gold').textContent = playerGold;
 
         // Update button text with imported abilities
         const buttons = document.querySelectorAll('.attack-btn');
@@ -119,12 +110,10 @@
             console.log('Updating enemy image to:', enemyImage);
             document.getElementById('enemy-hp').textContent = enemyHP;
             document.getElementById('enemy-image').src = enemyImage;
-            document.getElementById('enemy-gold').textContent = enemyGold;
         }
 
         function updatePlayerDisplay() {
             document.getElementById('player-hp').textContent = playerHP;
-            document.getElementById('gold').textContent = playerGold;
         }
 
         // -------------------------
@@ -192,16 +181,6 @@
             if (enemyHP <= 0) {
                 enemyImage = randomEnemy.animations.death;
                 updateEnemyDisplay(); // IMMEDIATELY update to show death
-
-                // Award gold to player
-                if (!enemyDefeated) {
-                    playerGold += enemyGold;
-                    document.getElementById('gold').textContent = playerGold;
-                    document.getElementById('battleText').innerText += `\nYou found ${enemyGold} gold!`;
-                    enemyGold = 0; // Enemy drops gold only once
-                    updateEnemyDisplay();
-                }
-
                 checkBattleOutcome();
                 return; // Don't do enemy counterattack if enemy is dead
             }
@@ -230,56 +209,24 @@
         function checkBattleOutcome() {
             if (playerHP <= 0) {
                 document.getElementById('battleText').innerText = "You were defeated!";
-                playerDefeated = true;
             } else if (enemyHP <= 0) {
                 enemyImage = randomEnemy.animations.death;
                 updateEnemyDisplay();
-                document.getElementById('battleText').innerText += `\nYou defeated the ${enemyName}!`;
-
-                enemyDefeated = true;
-                showSpecialButton();
+                document.getElementById('battleText').innerText = `You defeated the ${enemyName}!`;
             }
         }
 
         // Initial render
 
-        function showSpecialButton() {
-            if (!enemyDefeated) return;
-
-            const container = document.getElementById('special-button-container');
-
-            if (container.childElementCount === 0) {
-                const specialBtn = document.createElement('button');
-                specialBtn.classList.add('attack-btn');
-                specialBtn.textContent = "Return to Overworld";
-
-                specialBtn.onclick = () => {
-                    // Reset HP to full
-                    playerHP = playerAbilities.reduce((max, ability) => Math.max(max, ability.heal + max), 100); // or set a default max HP
-
-                    // Prepare data to pass via URL
-                    const playerData = {
-                        name: playerName,
-                        hp: playerHP,
-                        gold: playerGold,    // preserve gold
-                        abilities: playerAbilities
-                    };
-
-                    // Encode and navigate
-                    const query = encodeURIComponent(JSON.stringify(playerData));
-                    window.location.href = `overworld.html?character=${query}`;
-                };
-
-                container.appendChild(specialBtn);
-            }
-
-            container.style.display = "block";
-        }
-
     </script>
+
+
+
+
 </body>
-</html>
+
+</html> 
 
 
 
-
+ 
