@@ -1,85 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Overworld</title>
-  <link rel="stylesheet" href="overworld.css">
+  <link rel="stylesheet" href="overworld.css"/>
+  <style>
+    /* Character preview */
+    #overworld-character-wrap{
+      display:grid; place-items:center; margin-top:24px;
+    }
+    #overworld-character{ max-width:40vmin; image-rendering:pixelated; }
+
+    /* Text window */
+    #status-panel{
+      max-width:640px; margin:16px auto 0; padding:12px 14px;
+      background: rgba(0,0,0,.35);
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,.35);
+      color:#e7edf5; text-align:left;
+    }
+    #status-text{ margin:0; }
+
+    /* Region buttons */
+    #region-buttons{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(120px,1fr));
+      gap:12px; max-width:640px; margin:24px auto; padding:0 16px;
+    }
+    .region-btn{
+      padding:12px 16px; font-size:1rem;
+      border:2px solid #3a4a5f; background:#16212e; color:#e7edf5;
+      border-radius:10px; cursor:pointer; user-select:none;
+      transition: transform .03s ease, filter .15s ease;
+    }
+    .region-btn:active{ transform: translateY(1px); filter:brightness(1.2); }
+    .region-btn.active{
+      outline:2px solid #7cd2ff; box-shadow:0 0 0 3px rgba(124,210,255,.25);
+    }
+
+    #title-container{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:8px; }
+    #overworld-title{ height:40px }
+    #title_name{ font-weight:700 }
+  </style>
 </head>
 
 <body>
-
   <div id="title-container">
     <img id="overworld-title" src="../assets/sprites/title_bar.png" alt="Overworld Title">
     <span id="title_name">Overworld</span>
   </div>
 
-  <!-- Character Display Card -->
-  <div id="character-card" class="hero-card">
-    <div class="card-background">
-      <div class="character-portrait">
-        <img id="hero-image" src="" alt="Selected Hero">
-      </div>
-      <div class="character-stats">
-        <h2 id="hero-name"></h2>
-        <div class="stat-row">
-          <div class="stat-item">
-            <span class="stat-label">Health:</span>
-            <span id="hero-health" class="stat-value"></span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Gold:</span>
-            <span id="hero-gold" class="stat-value"></span>
-          </div>
-        </div>
-        <div class="character-flavor">
-          <p id="hero-flavor"></p>
-        </div>
-      </div>
-    </div>
+  <!-- Selected character image -->
+  <div id="overworld-character-wrap">
+    <img id="overworld-character" alt="Selected Character">
   </div>
 
-  <!-- Buttons to go to new areas -->
-  <div class="location-buttons">
-    <button id="forestBtn">Go to Forest</button>
-    <button id="dungeonBtn">Enter Dungeon</button>
-    <button id="templeBtn">Visit Temple</button>
-    <button id="shopBtn">Visit Shop</button>
+  <!-- Status text window -->
+  <div id="status-panel">
+    <p id="status-text"></p>
   </div>
+
+  <!-- Region choice buttons -->
+  <div id="region-buttons">
+    <button class="region-btn" data-region="forest">Forest</button>
+    <button class="region-btn" data-region="temple">Temple</button>
+    <button class="region-btn" data-region="shop">Shop</button>
+  </div>
+
+  <!-- character catalog -->
+  <script src="../assets/js/characters.js"></script>
+
   <script>
-    // 1. Get the query string (?character=...)
-    const params = new URLSearchParams(window.location.search);
-    const charData = params.get("character");
+    const buttonSound = new Audio("../assets/sound/button_sound.mp3");
+    const titleSpan = document.getElementById("title_name");
+    const buttons = [...document.querySelectorAll(".region-btn")];
+    const statusEl = document.getElementById("status-text");
 
-    let character = null;
-    if (charData) {
-      // 2. Decode and parse JSON
-      character = JSON.parse(decodeURIComponent(charData));
+    // Carry current params
+    const qs = new URLSearchParams(location.search);
 
-      // 3. Populate the character card
-      document.getElementById("hero-image").src = character.image;
-      document.getElementById("hero-image").alt = character.name;
-      document.getElementById("hero-name").textContent = character.name;
-      document.getElementById("hero-health").textContent = `${character.currentHp}/${character.maxHp}`;
-      document.getElementById("hero-gold").textContent = character.gold || 0;
-      document.getElementById("hero-flavor").textContent = character.flavor;
+    // Character preview + status text
+    (function init(){
+      const idx = Number(qs.get("character_type") || 0);
+      const i = Number.isFinite(idx) ? Math.max(0, Math.min(idx, (data.characters?.length || 1) - 1)) : 0;
+      const selected = data.characters[i] || data.characters[0];
+
+      const img = document.getElementById("overworld-character");
+      img.src = selected.image; img.alt = selected.name;
+
+      titleSpan.textContent = "Overworld";
+
+      const region = qs.get("region_type");
+      const cap = r => r ? r[0].toUpperCase() + r.slice(1) : r;
+
+      if (!region) {
+        statusEl.textContent = "You entered the world fresh for adventure.";
+      } else {
+        statusEl.textContent = `You have returned from adventuring the ${cap(region)} and are ready to move on to the next location.`;
+      }
+    })();
+
+    // Navigate helper
+    function go(region){
+      buttonSound.currentTime = 0; buttonSound.play();
+
+      // update region + preserve other params (character_type, hp, xp, gold, etc.)
+      const next = new URLSearchParams(qs);
+      next.set("region_type", region);
+
+      // decide destination
+      const dest = region === "shop" ? "maps/shop.html" : "battle.html";
+
+      // navigate
+      location.href = `${dest}?${next.toString()}`;
     }
 
-    // 4. Send the character data forward
-    function goTo(location) {
-      if (!character) return;
-      const data = encodeURIComponent(JSON.stringify(character));
-      window.location.href = `${location}.html?character=${data}`;
-    }
+    // Wire buttons + set active state (only if region present)
+    (function setupButtons(){
+      const current = qs.get("region_type");
+      if (current) buttons.forEach(b => b.classList.toggle("active", b.dataset.region === current));
 
-    // 5. Button click listeners
-    document.getElementById("forestBtn").addEventListener("click", () => goTo("forest"));
-    document.getElementById("dungeonBtn").addEventListener("click", () => goTo("dungeon"));
-    document.getElementById("templeBtn").addEventListener("click", () => goTo("temple"));
-    document.getElementById("shopBtn").addEventListener("click", () => goTo("shop"));
+      buttons.forEach(btn => {
+        const region = btn.dataset.region;
+        btn.addEventListener("click", () => go(region));
+        btn.addEventListener("touchend", (e)=>{ e.preventDefault(); go(region); }, { passive:false });
+      });
+    })();
   </script>
+
   <script src="../assets/js/cursor.js"></script>
 </body>
-
 </html>
