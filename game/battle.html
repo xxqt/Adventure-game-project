@@ -10,19 +10,30 @@
 <body>
     <h1>Battle Screen</h1>
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/main
     <script src="../assets/js/enemies.js"></script>
 
     <div id="enemy-info">
         <h2 id="enemy-name"></h2>
         <p>HP: <span id="enemy-hp"></span></p>
         <img id="enemy-image" src="" alt="Enemy Image" width="800">
+<<<<<<< HEAD
         <p>Gold: <span id="enemy-gold"></span></p> <!-- Show enemy gold -->
+=======
+>>>>>>> origin/main
     </div>
 
     <div id="character-info">
         <h2 id="player-name"></h2>
         <p>HP: <span id="player-hp"></span></p>
+<<<<<<< HEAD
         <p>Gold: <span id="gold"></span></p>
+=======
+>>>>>>> origin/main
     </div>
 
     <div id="console">
@@ -37,22 +48,31 @@
         <button class="attack-btn" onclick="playerAttack(0)">Attack 1</button>
         <button class="attack-btn" onclick="playerAttack(1)">Attack 2</button>
     </div>
+<<<<<<< HEAD
 
     <div id="special-button-container" style="display: none;"></div>
+=======
+>>>>>>> origin/main
 
     <script>
         const params = new URLSearchParams(window.location.search);
         const charData = params.get("character");
 
+<<<<<<< HEAD
         let enemyDefeated = false;
         let playerDefeated = false;
 
+=======
+>>>>>>> origin/main
         if (charData) {
             const character = JSON.parse(decodeURIComponent(charData));
             playerHP = character.hp;
             playerAbilities = character.abilities;
             playerName = character.name;
+<<<<<<< HEAD
             playerGold = character.gold;
+=======
+>>>>>>> origin/main
         }
 
         function displayAbilityNames() {
@@ -88,13 +108,19 @@
         const enemyAbilities = randomEnemy.abilities;
         let enemyImage = randomEnemy.animations.idle;
         const enemyFlavor = randomEnemy.flavor;
+<<<<<<< HEAD
         let enemyGold = randomEnemy.gold || 0; // Get enemy gold value
+=======
+>>>>>>> origin/main
 
         document.getElementById('enemy-name').textContent = enemyName;
         document.getElementById('enemy-hp').textContent = enemyHP;
         document.getElementById('battleText').textContent = `A wild ${enemyName} appears! ${enemyFlavor}`;
         document.getElementById('enemy-image').src = enemyImage;
+<<<<<<< HEAD
         document.getElementById('enemy-gold').textContent = enemyGold; // Display enemy gold
+=======
+>>>>>>> origin/main
 
         // -------------------------
         // Initialize displays
@@ -102,7 +128,10 @@
         // Update player display
         document.getElementById('player-name').textContent = playerName;
         document.getElementById('player-hp').textContent = playerHP;
+<<<<<<< HEAD
         document.getElementById('gold').textContent = playerGold;
+=======
+>>>>>>> origin/main
 
         // Update button text with imported abilities
         const buttons = document.querySelectorAll('.attack-btn');
@@ -119,12 +148,18 @@
             console.log('Updating enemy image to:', enemyImage);
             document.getElementById('enemy-hp').textContent = enemyHP;
             document.getElementById('enemy-image').src = enemyImage;
+<<<<<<< HEAD
             document.getElementById('enemy-gold').textContent = enemyGold;
+=======
+>>>>>>> origin/main
         }
 
         function updatePlayerDisplay() {
             document.getElementById('player-hp').textContent = playerHP;
+<<<<<<< HEAD
             document.getElementById('gold').textContent = playerGold;
+=======
+>>>>>>> origin/main
         }
 
         // -------------------------
@@ -192,6 +227,7 @@
             if (enemyHP <= 0) {
                 enemyImage = randomEnemy.animations.death;
                 updateEnemyDisplay(); // IMMEDIATELY update to show death
+<<<<<<< HEAD
 
                 // Award gold to player
                 if (!enemyDefeated) {
@@ -202,6 +238,8 @@
                     updateEnemyDisplay();
                 }
 
+=======
+>>>>>>> origin/main
                 checkBattleOutcome();
                 return; // Don't do enemy counterattack if enemy is dead
             }
@@ -230,6 +268,7 @@
         function checkBattleOutcome() {
             if (playerHP <= 0) {
                 document.getElementById('battleText').innerText = "You were defeated!";
+<<<<<<< HEAD
                 playerDefeated = true;
             } else if (enemyHP <= 0) {
                 enemyImage = randomEnemy.animations.death;
@@ -238,11 +277,18 @@
 
                 enemyDefeated = true;
                 showSpecialButton();
+=======
+            } else if (enemyHP <= 0) {
+                enemyImage = randomEnemy.animations.death;
+                updateEnemyDisplay();
+                document.getElementById('battleText').innerText = `You defeated the ${enemyName}!`;
+>>>>>>> origin/main
             }
         }
 
         // Initial render
 
+<<<<<<< HEAD
         function showSpecialButton() {
             if (!enemyDefeated) return;
 
@@ -283,3 +329,17 @@
 
 
 
+=======
+    </script>
+
+
+
+
+</body>
+
+</html> 
+
+
+
+ 
+>>>>>>> origin/main
