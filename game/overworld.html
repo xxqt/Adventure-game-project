@@ -9,45 +9,48 @@
 </head>
 
 <body>
-  <div id="title-container">
-    <img id="overworld-title" src="../assets/sprites/title_bar.png" alt="Overworld Title">
-    <span id="title_name">Overworld</span>
-  </div>
+  <h1>Overworld</h1>
 
-  <div id="play-container">
-    <img id="play-button" src="../assets/sprites/play_button.png" alt="Play Button">
-  </div>
+  <div id="character-display"></div>
 
+  <!-- Buttons to go to new areas -->
+  <div class="location-buttons">
+    <button id="forestBtn">Go to Forest</button>
+    <button id="dungeonBtn">Enter Dungeon</button>
+    <button id="templeBtn">Visit Temple</button>
+  </div>
   <script>
-    const playButton = document.getElementById("play-button");
-    let isHolding = false;
+    // 1. Get the query string (?character=...)
+    const params = new URLSearchParams(window.location.search);
+    const charData = params.get("character");
 
-    const buttonSound = new Audio("../assets/sound/button_sound.mp3");
+    let character = null;
+    if (charData) {
+      // 2. Decode and parse JSON
+      character = JSON.parse(decodeURIComponent(charData));
 
+      // 3. Show character info
+      const display = document.getElementById("character-display");
+      display.innerHTML = `
+        <h2>${character.name}</h2>
+        <p>HP: ${character.hp}</p>
+        <p>flavor: ${character.flavor}</p>
+        <p>difficulty: ${character.difficulty}</p>
+      `;
+    }
 
-    // When pressed down
-    playButton.addEventListener("mousedown", function () {
-      playButton.src = "../assets/sprites/play_button_pressed.png";
+    // 4. Send the character data forward
+    function goTo(location) {
+      if (!character) return;
+      const data = encodeURIComponent(JSON.stringify(character));
+      window.location.href = `${location}.html?character=${data}`;
+    }
 
-      buttonSound.play();
-
-      isHolding = true;
-
-    });
-
-    // When released anywhere
-    document.addEventListener("mouseup", function () {
-      if (isHolding) {
-        playButton.src = "../assets/sprites/play_button.png";
-        isHolding = false;
-        window.location.href = "character_selector.html";
-      }
-    });
-
-
+    // 5. Button click listeners
+    document.getElementById("forestBtn").addEventListener("click", () => goTo("forest"));
+    document.getElementById("dungeonBtn").addEventListener("click", () => goTo("dungeon"));
+    document.getElementById("templeBtn").addEventListener("click", () => goTo("temple"));
   </script>
-
-  <script src="../assets/js/cursor.js"></script>
 </body>
 
 </html>
