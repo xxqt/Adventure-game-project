@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop</title>
+    <link rel="stylesheet" href="shop.css">
+</head>
+
+<body>
+    <div id="title-container">
+        <img id="shop-title" src="../assets/sprites/title_bar.png" alt="Shop Title">
+        <span id="title_name">Shop</span>
+    </div>
+
+    <!-- Player Stats Display -->
+    <div id="player-stats">
+        <div id="gold-display">Gold: <span id="gold-amount">0</span></div>
+        <div id="character-name">Character: <span id="char-name">Unknown</span></div>
+        <div id="health-display">Health: <span id="current-hp">0</span>/<span id="max-hp">0</span></div>
+        <div id="attack-display">Extra Attack: <span id="attack-power">0</span></div>
+    </div>
+
+    <!-- Shop GIF in center -->
+    <div id="shop-gif-container">
+        <img id="shop-gif" src="../assets/shop.gif" alt="Shop Animation">
+    </div>
+
+    <!-- Shop Items Grid -->
+    <div id="shop-container" class="shop-grid">
+        <div class="shop-card">
+            <img src="../assets/sprites/card_background.png" class="card-bg" alt="Card Background">
+            <div class="item-info">
+                <h3>Health Potion</h3>
+                <p class="item-description">Restores 50 HP instantly</p>
+                <p class="item-price">Cost: 25 Gold</p>
+                <img src="../assets/sprites/select_button.png" class="buy-btn" data-item="health_potion" data-cost="25"
+                    alt="Buy Button">
+            </div>
+        </div>
+
+        <div class="shop-card">
+            <img src="../assets/sprites/card_background.png" class="card-bg" alt="Card Background">
+            <div class="item-info">
+                <h3>Strength Elixir</h3>
+                <p class="item-description">+10 Attack damage permanently</p>
+                <p class="item-price">Cost: 100 Gold</p>
+                <img src="../assets/sprites/select_button.png" class="buy-btn" data-item="strength_buff" data-cost="100"
+                    alt="Buy Button">
+            </div>
+        </div>
+
+        <div class="shop-card">
+            <img src="../assets/sprites/card_background.png" class="card-bg" alt="Card Background">
+            <div class="item-info">
+                <h3>Vitality Boost</h3>
+                <p class="item-description">+20 Max HP permanently</p>
+                <p class="item-price">Cost: 150 Gold</p>
+                <img src="../assets/sprites/select_button.png" class="buy-btn" data-item="health_buff" data-cost="150"
+                    alt="Buy Button">
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div id="nav-buttons">
+        <button id="back-btn" onclick="goBack()">Back to Overworld</button>
+    </div>
+
+    <script src="../assets/js/characters.js"></script>
+    <script>
+        const buttonSound = new Audio("../assets/sound/button_sound.mp3");
+
+        // Function to use a health potion with max HP limit
+        function useHealthPotion(character) {
+            if (!character.potions || character.potions <= 0) {
+                alert('No health potions available!');
+                return false;
+            }
+
+            const currentHp = character.currentHp;
+            const maxHp = character.maxHp;
+
+            if (currentHp >= maxHp) {
+                alert('HP is already at maximum!');
+                return false;
+            }
+
+            // Use the healCharacter function from characters.js
+            const actualHealing = healCharacter(character, 50);
+            character.potions -= 1;
+
+            alert(`Used Health Potion! Healed ${actualHealing} HP.`);
+            return true;
+        }
+
+        // Initialize shop with player data from URL
+        function initializeShop() {
+            const params = new URLSearchParams(window.location.search);
+            const charData = params.get("character");
+
+            if (charData) {
+                const character = JSON.parse(decodeURIComponent(charData));
+                updatePlayerStats(character);
+
+                // Store character data globally for purchases
+                window.currentCharacter = character;
+            } else {
+                // Fallback if no character data
+                document.getElementById('gold-amount').textContent = 100;
+                document.getElementById('char-name').textContent = 'No Character';
+                document.getElementById('current-hp').textContent = 0;
+                document.getElementById('max-hp').textContent = 0;
+                document.getElementById('attack-power').textContent = 0;
+                window.currentCharacter = null;
+            }
+        }
+
+        // Function to update player stats display
+        function updatePlayerStats(character) {
+            if (!character) return;
+
+            document.getElementById('gold-amount').textContent = character.gold || 0;
+            document.getElementById('char-name').textContent = character.name || 'Unknown';
+            document.getElementById('current-hp').textContent = character.currentHp || 0;
+            document.getElementById('max-hp').textContent = character.maxHp || 0;
+
+            // Show only extra attack damage from purchases (0 if none)
+            const extraAttack = character.attackBonus || 0;
+            document.getElementById('attack-power').textContent = extraAttack;
+        }
+
+        // Handle item purchases
+        function buyItem(itemType, cost) {
+            if (!window.currentCharacter) {
+                alert('No character data found!');
+                return;
+            }
+
+            const character = window.currentCharacter;
+            const currentGold = character.gold || 100;
+
+            if (currentGold < cost) {
+                alert('Not enough gold!');
+                return;
+            }
+
+            // Deduct gold
+            character.gold = currentGold - cost;
+
+            // Apply item effects
+            switch (itemType) {
+                case 'health_potion':
+                    character.potions = (character.potions || 0) + 1;
+                    alert('Bought Health Potion! Added to inventory.');
+                    break;
+                case 'strength_buff':
+                    character.attackBonus = (character.attackBonus || 0) + 10;
+                    alert('Strength increased! +10 Attack damage.');
+                    break;
+                case 'health_buff':
+                    // Use the new HP system
+                    character.maxHp = character.maxHp + 20;
+                    character.currentHp = character.currentHp + 20;
+                    alert('Vitality increased! +20 Max HP.');
+                    break;
+            }
+
+            // Update all player stats display
+            updatePlayerStats(character);
+
+            // Update global character data
+            window.currentCharacter = character;
+        }
+
+        // Add event listeners to all buy buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            const buyButtons = document.querySelectorAll('.buy-btn');
+
+            buyButtons.forEach(button => {
+                // Pressed effect
+                button.addEventListener('mousedown', () => {
+                    button.src = "../assets/sprites/select_button_pressed.png";
+                    buttonSound.play();
+                });
+
+                // Purchase on release
+                button.addEventListener('mouseup', () => {
+                    button.src = "../assets/sprites/select_button.png";
+                    const itemType = button.getAttribute('data-item');
+                    const cost = parseInt(button.getAttribute('data-cost'));
+                    buyItem(itemType, cost);
+                });
+            });
+            // Initialize shop
+            initializeShop();
+        });
+
+        function goBack() {
+            if (window.currentCharacter) {
+                const charData = encodeURIComponent(JSON.stringify(window.currentCharacter));
+                window.location.href = `overworld.html?character=${charData}`;
+            } else {
+                window.location.href = 'overworld.html';
+            }
+        }
+    </script>
+
+    <script src="../assets/js/cursor.js"></script>
+</body>
+
+</html>

@@ -29,41 +29,64 @@ body {
 
 #enemy-info {
   background-image: url("../assets/sprites/card_background.png");
-  background-size: contain; /* Scales image to cover entire div */
-  background-position: center; /* Centers the image */
-  background-repeat: no-repeat; /* Prevents image repetition */
-  padding: 20px; /* Add some padding so text isn't at edges */
-  border-radius: 10px; /* Optional: rounded corners */
-  font-family: "PixelifySans", sans-serif; /* Font family */
+  background-size: contain;
+  /* Scales image to cover entire div */
+  background-position: center;
+  /* Centers the image */
+  background-repeat: no-repeat;
+  /* Prevents image repetition */
+  padding: 20px;
+  /* Add some padding so text isn't at edges */
+  border-radius: 10px;
+  /* Optional: rounded corners */
+  font-family: "PixelifySans", sans-serif;
+  /* Font family */
 }
 
 #console {
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
-  border: 2px solid white; /* White border */
-  border-radius: 10px; /* Rounded corners */
-  padding: 10px; /* Padding inside the console */
-  margin: 20px auto; /* Center horizontally with margin */
-  width: 80%; /* Width of the console */
-  max-width: 600px; /* Max width for larger screens */
-  color: white; /* Text color */
-  font-family: "PixelifySans", sans-serif; /* Font family */
-  font-size: 18px; /* Font size */
-  text-align: left; /* Left align text */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Semi-transparent black background */
+  border: 2px solid white;
+  /* White border */
+  border-radius: 10px;
+  /* Rounded corners */
+  padding: 10px;
+  /* Padding inside the console */
+  margin: 20px auto;
+  /* Center horizontally with margin */
+  width: 80%;
+  /* Width of the console */
+  max-width: 600px;
+  /* Max width for larger screens */
+  color: white;
+  /* Text color */
+  font-family: "PixelifySans", sans-serif;
+  /* Font family */
+  font-size: 18px;
+  /* Font size */
+  text-align: left;
+  /* Left align text */
 }
 
 #ability-buttons {
-  display: flex; /* Use flexbox for better layout */
-  justify-content: center; /* Center buttons horizontally */
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
-  gap: 20px; /* Space between buttons */
-  margin: 60px auto 0 auto; /* Space below image + center horizontally */
+  display: flex;
+  /* Use flexbox for better layout */
+  justify-content: center;
+  /* Center buttons horizontally */
+  flex-wrap: wrap;
+  /* Allow wrapping on smaller screens */
+  gap: 20px;
+  /* Space between buttons */
+  margin: 60px auto 0 auto;
+  /* Space below image + center horizontally */
   padding: 10px 0;
   font-size: 24px;
 }
 
 .attack-btn-wrapper {
   position: relative;
-  width: 200px; /* Match button width */
+  width: 200px;
+  /* Match button width */
 }
 
 .ability-wrapper {
@@ -79,25 +102,34 @@ body {
   transform: translate(-50%, -50%);
   color: white;
   font-weight: bold;
-  font-size: 14px; /* Smaller text */
+  font-size: 14px;
+  /* Smaller text */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  pointer-events: none; /* Lets clicks pass through to the button */
+  pointer-events: none;
+  /* Lets clicks pass through to the button */
   user-select: none;
   text-align: center;
-  z-index: 1; /* Ensure text appears above button */
+  z-index: 1;
+  /* Ensure text appears above button */
 }
 
 .attack-btn {
   background-image: url('../assets/sprites/select_button.png');
-  background-size: contain; /* Show full button shape without cropping */
+  background-size: contain;
+  /* Show full button shape without cropping */
   background-position: center;
   background-repeat: no-repeat;
-  background-color: transparent; /* Make background transparent */
-  width: 200px; /* Set your button dimensions */
-  height: 80px; /* Increased height for better proportion */
+  background-color: transparent;
+  /* Make background transparent */
+  width: 200px;
+  /* Set your button dimensions */
+  height: 80px;
+  /* Increased height for better proportion */
   border: none;
-  border-radius: 0; /* Remove border radius to avoid clipping */
-  color: white; /* For text over the image */
+  border-radius: 0;
+  /* Remove border radius to avoid clipping */
+  color: white;
+  /* For text over the image */
   font-family: "PixelifySans", sans-serif;
   font-size: 16px;
   font-weight: bold;
@@ -130,3 +162,4 @@ body {
     flex-direction: column;
     align-items: center;
   }
+}
