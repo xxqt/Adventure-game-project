@@ -6,7 +6,7 @@ const boss = {
     "death": "../assets/boss/boss_death.gif",
     "buff": "../assets/boss/boss_buff.gif"
   },
-  "hp": 250,
+  "hp": 600,
   "difficulty": 5,
   "flavor": "A dark wizard who wields destructive magic and empowers himself.",
   "abilities": [

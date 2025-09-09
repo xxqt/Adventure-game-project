@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Character Selector</title>
-  <link rel="stylesheet" href="character_selector.css">
+  <link rel="stylesheet" href="character_selector.css"/>
 </head>
-
 <body>
   <h1>Character Selector</h1>
 
-  <!-- Container where characters will appear -->
   <div id="character-container" class="character-grid"></div>
   <script src="../assets/js/characters.js"></script>
 
@@ -19,7 +16,13 @@
     const buttonSound = new Audio("../assets/sound/button_sound.mp3");
     const container = document.getElementById("character-container");
 
-    data.characters.forEach(character => {
+    // Carry through any existing query params from the current page
+    const baseParams = new URLSearchParams(location.search);
+
+    // Manually list which traits are mutable and should ride along in the URL
+    const MUTABLE_KEYS = ["hp", "ap", "gold"]; // add/remove keys as needed
+
+    data.characters.forEach((character, index) => {
       const card = document.createElement("div");
       card.classList.add("character-card");
 
@@ -27,19 +30,17 @@
         <img src="${character.image}" alt="${character.name}" class="character-img">
         <div class="character-info">
           <h2>${character.name}</h2>
-          <p><strong>HP:</strong> ${character.maxHp}</p>
+          <p><strong>HP:</strong> ${character.hp}</p>
           <p><strong>Difficulty:</strong> ${character.difficulty}</p>
           <p class="flavor">${character.flavor}</p>
           <h3>Abilities</h3>
           <ul>
-            ${character.abilities.map(ability => `
-              <li><strong>${ability.name}:</strong> ${ability.description}</li>
+            ${character.abilities.map(a => `
+              <li><strong>${a.name}:</strong> ${a.description}</li>
             `).join("")}
           </ul>
-          <img src="../assets/sprites/select_button.png" 
-               class="select-btn" 
-               alt="Select Button">
-        </div> 
+          <img src="../assets/sprites/select_button.png" class="select-btn" alt="Select Button">
+        </div>
       `;
 
       const selectBtn = card.querySelector(".select-btn");
@@ -50,15 +51,30 @@
         buttonSound.play();
       });
 
-      // Release → pick character + go to overworld
-      selectBtn.addEventListener("mouseup", () => {
+      // Release → go to overworld with ?character_type=<index>&xp=0&hp=<val>&ap=<val>...
+      const go = () => {
         selectBtn.src = "../assets/sprites/select_button.png";
-        // Pass character name via query string
-        const charData = encodeURIComponent(JSON.stringify(character));
-        window.location.href = `overworld.html?character=${charData}`;
-        // window.location.href = `battle.html?character=${charData}`;
 
-      });
+        // Clone current params, then set selection + mutable stats
+        const qs = new URLSearchParams(baseParams);
+        qs.set("character_type", index);
+
+        // NEW: ensure xp is present and starts at 0
+        qs.set("xp", "0");
+
+        // Add only the mutable keys that exist on this character
+        for (const key of MUTABLE_KEYS) {
+          const val = character[key];
+          if (val !== undefined && val !== null) {
+            qs.set(key, String(val));
+          }
+        }
+
+        window.location.href = `overworld.html?${qs.toString()}`;
+      };
+
+      selectBtn.addEventListener("mouseup", go);
+      selectBtn.addEventListener("touchend", (e) => { e.preventDefault(); go(); }, { passive: false });
 
       container.appendChild(card);
     });
@@ -66,5 +82,5 @@
 
   <script src="../assets/js/cursor.js"></script>
 </body>
-
 </html>
+
