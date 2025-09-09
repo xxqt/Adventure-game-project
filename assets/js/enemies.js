@@ -9,6 +9,7 @@ const enemies = {
       },
       "hp": 50,
       "difficulty": 1,
+      "gold": 10, // gold awarded
       "flavor": "A mischievous creature that relies on quick strikes.",
       "abilities": [
         {
@@ -34,6 +35,7 @@ const enemies = {
       },
       "hp": 40,
       "difficulty": 2,
+      "gold": 15,
       "flavor": "A creepy flying eye that attacks from above.",
       "abilities": [
         {
@@ -59,6 +61,7 @@ const enemies = {
       },
       "hp": 60,
       "difficulty": 3,
+      "gold": 20,
       "flavor": "An animated skeleton wielding a rusty sword.",
       "abilities": [
         {
