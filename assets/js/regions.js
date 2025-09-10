@@ -11,16 +11,17 @@ const regions = {
     battleBg:    "../assets/temple_bg.png",
     monstersByName: ["Skeleton", "Flying Eye"]
   },
+    dungeon: {
+    label: "Dungeon",
+    overworldBg: "../assets/overworld.png",
+    battleBg:    "../assets/dungeon_bg.png",
+    monstersByName: ["Necromancer"] // 
+  },
   shop: {
     label: "Shop",
     overworldBg: "../assets/overworld.png",
     battleBg:    "../assets/shop_bg.png",
     monstersByName: [] // safe zone: no battles
   },
-  dungeon: {
-    label: "Dungeon",
-    overworldBg: "../assets/overworld.png",
-    battleBg:    "../assets/dungeon_bg.png",
-    monstersByName: ["necromancer"] // boss level
-  }
+
 };
