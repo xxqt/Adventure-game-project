@@ -1,0 +1,175 @@
+@font-face {
+    font-family: "PixelifySans";
+    src: url("../assets/font/PixelifySans-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: "PixelifySans", sans-serif;
+    margin: 0;
+    padding: 0;
+    background: url("../assets/blessing.gif") no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+#blessing-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+}
+
+#blessing-message {
+    background: rgba(0, 0, 0, 0.4);
+    border: 3px solid #daa520;
+    border-radius: 20px;
+    padding: 25px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    animation: blessing-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes blessing-glow {
+    0% {
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6), 0 0 20px rgba(218, 165, 32, 0.3);
+    }
+
+    100% {
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6), 0 0 30px rgba(218, 165, 32, 0.6);
+    }
+}
+
+#blessing-message h1 {
+    color: #daa520;
+    font-size: 36px;
+    margin: 0 0 20px 0;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+    animation: text-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes text-shimmer {
+
+    0%,
+    100% {
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+    }
+
+    50% {
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7), 0 0 15px rgba(218, 165, 32, 0.8);
+    }
+}
+
+.blessing-text {
+    color: #fff;
+    font-size: 20px;
+    margin: 20px 0 30px 0;
+    line-height: 1.6;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+#blessing-effects {
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid #555;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 30px 0;
+}
+
+.effect-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    border: 1px solid #666;
+}
+
+.effect-label {
+    color: #ccc;
+    font-size: 18px;
+}
+
+.effect-value {
+    color: #00ff00;
+    font-size: 22px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    animation: value-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes value-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+#continue-btn {
+    background: linear-gradient(145deg, #4a3728, #2c1810);
+    color: #daa520;
+    border: 3px solid #8b4513;
+    border-radius: 15px;
+    padding: 15px 30px;
+    font-size: 20px;
+    font-family: "PixelifySans", sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    min-width: 200px;
+}
+
+#continue-btn:hover {
+    background: linear-gradient(145deg, #5a4738, #3c2820);
+    border-color: #daa520;
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4), 0 0 15px rgba(218, 165, 32, 0.3);
+}
+
+#continue-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    #blessing-message {
+        padding: 20px 15px;
+        max-width: 85%;
+        margin: 15px;
+    }
+
+    #blessing-message h1 {
+        font-size: 28px;
+    }
+
+    .blessing-text {
+        font-size: 18px;
+    }
+
+    .effect-label,
+    .effect-value {
+        font-size: 16px;
+    }
+
+    #continue-btn {
+        font-size: 18px;
+        padding: 12px 25px;
+    }
+}

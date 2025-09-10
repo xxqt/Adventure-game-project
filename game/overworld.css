@@ -138,9 +138,28 @@ body {
   line-height: 1.5;
 }
 
+/* Status Message */
+.status-text {
+  position: absolute;
+  top: 64%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(44, 24, 16, 0.9);
+  color: #daa520;
+  padding: 15px 25px;
+  border-radius: 10px;
+  border: 2px solid #8b4513;
+  font-family: "PixelifySans", sans-serif;
+  font-size: 16px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 6;
+}
+
 .location-buttons {
   position: absolute;
-  bottom: 150px;
+  bottom: 100px;
   left: 50%;
   transform: translate(-66%);
   display: grid;
@@ -165,13 +184,11 @@ body {
   text-align: center;
 }
 
-.location-buttons button:hover {
+
+
+.location-buttons button.active {
   background: #4a2c1a;
   border-color: #daa520;
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.location-buttons button:active {
-  transform: scale(0.95);
+  box-shadow: 0 0 15px rgba(218, 165, 32, 0.4);
+  color: #daa520;
 }

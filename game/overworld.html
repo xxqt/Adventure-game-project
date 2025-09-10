@@ -5,44 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Overworld</title>
   <link rel="stylesheet" href="overworld.css"/>
-  <style>
-    /* Character preview */
-    #overworld-character-wrap{
-      display:grid; place-items:center; margin-top:24px;
-    }
-    #overworld-character{ max-width:40vmin; image-rendering:pixelated; }
-
-    /* Text window */
-    #status-panel{
-      max-width:640px; margin:16px auto 0; padding:12px 14px;
-      background: rgba(0,0,0,.35);
-      border-radius: 10px;
-      border: 2px solid rgba(255,255,255,.35);
-      color:#e7edf5; text-align:left;
-    }
-    #status-text{ margin:0; }
-
-    /* Region buttons */
-    #region-buttons{
-      display:grid;
-      grid-template-columns: repeat(4, minmax(120px,1fr));
-      gap:12px; max-width:640px; margin:24px auto; padding:0 16px;
-    }
-    .region-btn{
-      padding:12px 16px; font-size:1rem;
-      border:2px solid #3a4a5f; background:#16212e; color:#e7edf5;
-      border-radius:10px; cursor:pointer; user-select:none;
-      transition: transform .03s ease, filter .15s ease;
-    }
-    .region-btn:active{ transform: translateY(1px); filter:brightness(1.2); }
-    .region-btn.active{
-      outline:2px solid #7cd2ff; box-shadow:0 0 0 3px rgba(124,210,255,.25);
-    }
-
-    #title-container{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:8px; }
-    #overworld-title{ height:40px }
-    #title_name{ font-weight:700 }
-  </style>
 </head>
 
 <body>
@@ -61,89 +23,86 @@
     <p id="status-text"></p>
   </div>
 
-  <!-- Region choice buttons -->
-  <div id="region-buttons">
-    <button class="region-btn" data-region="forest">Forest</button>
-    <button class="region-btn" data-region="temple">Temple</button>
-    <button class="region-btn" data-region="shop">Shop</button>
-    <button class="region-btn" data-region="dungeon">Dungeon</button>
+  <!-- Status message -->
+  <div id="status-message" class="status-text"></div>
+
+  <!-- Buttons to go to new areas -->
+  <div class="location-buttons">
+    <button data-region="forest">Go to Forest</button>
+    <button data-region="temple">Visit Temple</button>
+    <button data-region="dungeon">Enter Dungeon</button>
+    <button data-region="shop">Visit Shop</button>
   </div>
-
-  <!-- character catalog -->
-  <script src="../assets/js/characters.js"></script>
-
+  <script src="../assets/js/regions.js"></script>
   <script>
     const buttonSound = new Audio("../assets/sound/button_sound.mp3");
-    const titleSpan = document.getElementById("title_name");
-    const buttons = [...document.querySelectorAll(".region-btn")];
-    const statusEl = document.getElementById("status-text");
+    const qs = new URLSearchParams(window.location.search);
+    const statusEl = document.getElementById("status-message");
+    const buttons = document.querySelectorAll(".location-buttons button");
 
-    // Carry current params
-    const qs = new URLSearchParams(location.search);
+    // Load character data from URL params
+    const charData = qs.get("character");
 
-    // Parse character from query
     let character = null;
-    (function init(){
-      const charData = qs.get("character");
-      if (charData) {
-        try {
-          character = JSON.parse(decodeURIComponent(charData));
-        } catch(e) {
-          console.error("Failed to parse character from query:", e);
-        }
-      }
+    if (charData) {
+      // Decode and parse JSON
+      character = JSON.parse(decodeURIComponent(charData));
 
-      // If none passed, fall back to first character in characters.js
-      if (!character && data.characters?.length) {
-        character = data.characters[0];
-      }
+      // Populate the character card
+      document.getElementById("hero-image").src = character.image;
+      document.getElementById("hero-image").alt = character.name;
+      document.getElementById("hero-name").textContent = character.name;
+      document.getElementById("hero-health").textContent = `${character.currentHp}/${character.maxHp}`;
+      document.getElementById("hero-gold").textContent = character.gold;
+      document.getElementById("hero-flavor").textContent = character.flavor;
+    }
 
-      // Character preview
-      if (character) {
-        const img = document.getElementById("overworld-character");
-        img.src = character.image;
-        img.alt = character.name;
-      }
-
-      titleSpan.textContent = "Overworld";
-
+    // Display status message based on region
+    (function updateStatus() {
       const region = qs.get("region_type");
       const cap = r => r ? r[0].toUpperCase() + r.slice(1) : r;
 
       if (!region) {
         statusEl.textContent = "You entered the world fresh for adventure.";
       } else {
-        statusEl.textContent = `You have returned from adventuring the ${cap(region)} and are ready to move on to the next location.`;
+        statusEl.innerHTML = `You have returned from adventuring the <strong style="color: red;">${cap(region)}</strong> and are ready to move on to the next location.`;
       }
     })();
 
     // Navigate helper
-    function go(region){
-      buttonSound.currentTime = 0; buttonSound.play();
+    function go(region) {
+      buttonSound.currentTime = 0;
+      buttonSound.play();
 
-      // update region + preserve character
+      if (!character) return;
+
+      // Create new URL parameters preserving character data
+      const charData = encodeURIComponent(JSON.stringify(character));
       const next = new URLSearchParams();
-      if (character) {
-        next.set("character", encodeURIComponent(JSON.stringify(character)));
-      }
+      next.set("character", charData);
       next.set("region_type", region);
 
-      // decide destination
+      // Decide destination ***important
       const dest = region === "shop" ? "shop.html" : "battle.html";
 
-      // navigate
+      // Navigate
       location.href = `${dest}?${next.toString()}`;
     }
 
     // Wire buttons + set active state (only if region present)
-    (function setupButtons(){
+    (function setupButtons() {
       const current = qs.get("region_type");
-      if (current) buttons.forEach(b => b.classList.toggle("active", b.dataset.region === current));
+      if (current) {
+        buttons.forEach(b => b.classList.toggle("active", b.dataset.region === current));
+      }
 
       buttons.forEach(btn => {
         const region = btn.dataset.region;
         btn.addEventListener("click", () => go(region));
-        btn.addEventListener("touchend", (e)=>{ e.preventDefault(); go(region); }, { passive:false });
+        btn.addEventListener("touchend", (e) => {
+          e.preventDefault();
+          go(region);
+        }, { passive: false });
       });
     })();
   </script>

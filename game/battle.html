@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Battle Screen</title>
   <link rel="stylesheet" href="battle.css" />
   <style>
-    :root{
+    :root {
       --scene-w: 720px;
       --scene-h: 504px;
       --side-w: 320px;
@@ -15,65 +16,117 @@
       --monster-nudge: 300px;
     }
 
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      background:url("../assets/overworld.png") center/cover no-repeat fixed;
-      color:#e7edf5; text-align:center;
-    }
-    h1{ margin:12px 0; }
-
-    #battle-layout{
-      width:min(100%, calc(var(--scene-w) + var(--side-w) + var(--gap) + 24px));
-      margin:0 auto 24px; padding:0 12px;
-      display:grid; grid-template-columns: var(--scene-w) var(--side-w);
-      gap:var(--gap); align-items:start;
-    }
-    @media (max-width:1100px){ #battle-layout{ grid-template-columns:1fr; } }
-
-    .scene{
-      position:relative; width:var(--scene-w); height:var(--scene-h);
-      margin:8px auto 8px; overflow:hidden;
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: url("../assets/overworld.png") center/cover no-repeat fixed;
+      color: #e7edf5;
+      text-align: center;
     }
 
-    #region-bg{
-      position:absolute; inset:0; z-index:1;
-      background-size:cover; background-position:center; background-repeat:no-repeat;
-      image-rendering:pixelated; width:100%; height:100%;
+    h1 {
+      margin: 12px 0;
     }
 
-    #frame{ display:none; }
-
-    .frame-border{
-      position:absolute; inset:0; z-index:2; pointer-events:none;
-      border:10px solid #aeb3c3; border-radius:12px;
-      box-shadow: inset 0 0 0 2px #6b7485, 0 0 0 2px rgba(0,0,0,.35);
+    #battle-layout {
+      width: min(100%, calc(var(--scene-w) + var(--side-w) + var(--gap) + 24px));
+      margin: 0 auto 24px;
+      padding: 0 12px;
+      display: grid;
+      grid-template-columns: var(--scene-w) var(--side-w);
+      gap: var(--gap);
+      align-items: start;
     }
 
-    #enemy-image{
-      position:absolute; left:50%; bottom:8px;
+    @media (max-width:1100px) {
+      #battle-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .scene {
+      position: relative;
+      width: var(--scene-w);
+      height: var(--scene-h);
+      margin: 8px auto 8px;
+      overflow: hidden;
+    }
+
+    #region-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
+      width: 100%;
+      height: 100%;
+    }
+
+    #frame {
+      display: none;
+    }
+
+    .frame-border {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      border: 10px solid #aeb3c3;
+      border-radius: 12px;
+      box-shadow: inset 0 0 0 2px #6b7485, 0 0 0 2px rgba(0, 0, 0, .35);
+    }
+
+    #enemy-image {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
       transform: translate(calc(-50%), var(--monster-nudge)) scale(var(--monster-scale));
       transform-origin: bottom center;
-      image-rendering:pixelated; z-index:3;
-      max-width:none; max-height:none;
+      image-rendering: pixelated;
+      z-index: 3;
+      max-width: none;
+      max-height: none;
     }
 
-    #console{
-      background:rgba(0,0,0,.35);
-      padding:10px 12px; border-radius:8px; text-align:left;
-      width:var(--scene-w); margin:0 auto; min-height:54px; box-sizing:border-box;
+    #console {
+      background: rgba(0, 0, 0, .35);
+      padding: 10px 12px;
+      border-radius: 8px;
+      text-align: left;
+      width: var(--scene-w);
+      margin: 0 auto;
+      min-height: 54px;
+      box-sizing: border-box;
     }
 
-    #sidebar{ display:grid; gap:var(--gap); }
-    #enemy-info, #character-info{
-      background:rgba(0,0,0,.75);
-      padding:12px; border-radius:8px; text-align:left;
+    #sidebar {
+      display: grid;
+      gap: var(--gap);
     }
 
-    #ability-buttons{ display:grid; grid-template-columns:1fr; gap:10px; }
-    .attack-btn{
-      padding:10px 12px; border:2px solid #3a4a5f; background:#16212e;
-      color:#e7edf5; border-radius:10px; cursor:pointer;
+    #enemy-info,
+    #character-info {
+      background: rgba(0, 0, 0, .75);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    #ability-buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .attack-btn {
+      padding: 10px 12px;
+      border: 2px solid #3a4a5f;
+      background: #16212e;
+      color: #e7edf5;
+      border-radius: 10px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -90,7 +143,9 @@
         <div class="frame-border"></div>
       </div>
 
-      <div id="console"><p id="battleText">Ambush!</p></div>
+      <div id="console">
+        <p id="battleText">Ambush!</p>
+      </div>
     </div>
 
     <div id="sidebar">
@@ -117,53 +172,61 @@
 
   <script>
     const qs = new URLSearchParams(location.search);
+    const regionKey = (qs.get("region_type") || "forest").toLowerCase();
 
-    // Load full character object if passed from shop/selector
-    let player = null;
+    // Handle character data from overworld
     const charData = qs.get("character");
-    if(charData){
-      try { player = JSON.parse(decodeURIComponent(charData)); } 
-      catch(e){ console.warn("Invalid character data", e); }
+    let character = null;
+    let playerHP, playerGold, playerMaxHP, playerName, playerAbilities;
+
+    if (charData) {
+      // Parse character data from overworld
+      character = JSON.parse(decodeURIComponent(charData));
+      playerName = character.name;
+      playerHP = character.currentHp;
+      playerMaxHP = character.maxHp;
+      playerGold = character.gold || 0;
+      playerAbilities = character.abilities;
+    } else {
+      // Fallback to old parameter system for backward compatibility
+      const idx = +qs.get("character_type") || 0;
+      playerHP = +qs.get("hp") || 0;
+      playerGold = +qs.get("gold") || 0;
+      playerName = "Hero";
+      playerAbilities = [
+        { name: "Strike", damage: 5, heal: 0 },
+        { name: "Guard", damage: 0, heal: 3 },
+      ];
+
+      if (typeof data !== "undefined" && data.characters && data.characters[idx]) {
+        const c = data.characters[idx];
+        playerName = c.name;
+        playerAbilities = c.abilities || playerAbilities;
+        if (!playerHP) playerHP = c.currentHp || c.maxHp || 20;
+        if (!playerGold) playerGold = c.gold || 0;
+        playerMaxHP = c.maxHp || 20;
+      } else {
+        if (!playerHP) playerHP = 20;
+        playerMaxHP = 20;
+      }
     }
 
-    // Fallbacks if no full character object
-    const idx = +qs.get("character_type") || 0;
-    let playerCurrentHp = player?.currentHp ?? +qs.get("currentHp") ?? 20;
-    let playerMaxHp     = player?.maxHp     ?? +qs.get("maxHp") ?? 20;
-    let playerGold      = player?.gold      ?? +qs.get("gold") ?? 0;
-    let playerName      = player?.name      ?? (data.characters[idx]?.name || "Hero");
-    let playerAbilities = player?.abilities ?? (data.characters[idx]?.abilities || [
-      { name: "Strike", damage: 5, heal: 0 },
-      { name: "Guard",  damage: 0, heal: 3 },
-    ]);
+    // Update UI with character data
+    document.getElementById("player-name").textContent = playerName;
+    document.getElementById("player-hp").textContent = playerHP;
+    document.getElementById("player-maxhp").textContent = playerMaxHP;
+    document.getElementById("player-gold").textContent = playerGold;
 
-    // Display player info
-    const playerNameEl   = document.getElementById("player-name");
-    const playerHpEl     = document.getElementById("player-hp");
-    const playerMaxHpEl  = document.getElementById("player-maxhp");
-    const playerGoldEl   = document.getElementById("player-gold");
-
-    function updatePlayerDisplay(){
-      playerNameEl.textContent  = playerName;
-      playerHpEl.textContent    = playerCurrentHp;
-      playerMaxHpEl.textContent = playerMaxHp;
-      playerGoldEl.textContent  = playerGold;
-    }
-
-    updatePlayerDisplay();
-
-    // Set attack buttons
-    document.querySelectorAll(".attack-btn").forEach((btn,i)=>{
-      if(btn.id==="run-btn") return;
+    document.querySelectorAll(".attack-btn").forEach((btn, i) => {
+      if (btn.id === "run-btn") return;
       const a = playerAbilities[i];
       if(a) btn.textContent = a.name;
       else btn.style.display = "none";
     });
 
     // Load region and enemy
-    const regionKey = (qs.get("region_type") || "forest").toLowerCase();
     const regionCfg = (typeof regions !== "undefined" && regions[regionKey]) ? regions[regionKey] : null;
-    const regionBg  = (regionCfg?.battleBg) ? regionCfg.battleBg : "../assets/sprites/game_background.png";
+    const regionBg = (regionCfg && regionCfg.battleBg) ? regionCfg.battleBg : "../assets/sprites/game_background.png";
     document.getElementById("region-bg").style.backgroundImage = `url("${regionBg}")`;
 
     const catalog = (typeof enemies !== "undefined" && enemies.enemies) ? enemies.enemies : [];
@@ -174,98 +237,187 @@
 
     if(!pool.length){
       document.getElementById("enemy-name").textContent = "No enemies here";
-      document.getElementById("enemy-hp").textContent   = "";
+      document.getElementById("enemy-hp").textContent = "";
       document.getElementById("enemy-image").style.display = "none";
       document.getElementById("battleText").textContent = "This area is safe.";
-      document.querySelectorAll(".attack-btn").forEach(b=>{ if(b.id!=="run-btn") b.disabled=true; });
-      window.playerAttack = ()=>{};
+      document.querySelectorAll(".attack-btn").forEach(b => { if (b.id !== "run-btn") b.disabled = true; });
+      window.playerAttack = function () { };
     } else {
-      const randomEnemy   = pool[Math.floor(Math.random()*pool.length)];
-      let enemyName       = randomEnemy.name;
-      let enemyHP         = randomEnemy.hp;
-      const enemyAbilities= randomEnemy.abilities || [];
-      let enemyImage      = randomEnemy.animations.idle;
-      const enemyDiff     = Number(randomEnemy.difficulty || 1);
+      const randomEnemy = pool[Math.floor(Math.random() * pool.length)];
+      let enemyName = randomEnemy.name;
+      let enemyHP = randomEnemy.hp;
+      const enemyAbilities = randomEnemy.abilities || [];
+      let enemyImage = randomEnemy.animations.idle;
+      const enemyFlavor = randomEnemy.flavor || "";
+      const enemyDiff = Number(randomEnemy.difficulty || 1);
 
       document.getElementById("enemy-name").textContent = enemyName;
-      document.getElementById("enemy-hp").textContent   = enemyHP;
-      document.getElementById("enemy-image").src        = enemyImage;
-      document.getElementById("battleText").textContent = `A wild ${enemyName} appears!`;
+      document.getElementById("enemy-hp").textContent = enemyHP;
+      document.getElementById("battleText").textContent = `A wild ${enemyName} appears! ${enemyFlavor}`;
+      document.getElementById("enemy-image").src = enemyImage;
 
-      function updateEnemyDisplay(){
+      function updateEnemyDisplay() {
         document.getElementById("enemy-hp").textContent = enemyHP;
         document.getElementById("enemy-image").src = enemyImage;
       }
+      function updatePlayerDisplay() {
+        document.getElementById("player-hp").textContent = playerHP;
+        document.getElementById("player-maxhp").textContent = playerMaxHP;
+        document.getElementById("player-gold").textContent = playerGold;
 
-      function move(name, damage, heal){
-        playerCurrentHp = Math.min(playerCurrentHp + (heal||0), playerMaxHp);
-        enemyHP -= (damage||0);
-        if(playerCurrentHp<0) playerCurrentHp=0;
-        if(enemyHP<0) enemyHP=0;
+        // Update character object if it exists
+        if (character) {
+          character.currentHp = playerHP;
+          character.gold = playerGold;
+        }
+      }
+
+      function move(name, damage, heal) {
+        // healing cannot exceed max HP
+        playerHP = Math.min(playerHP + (heal || 0), playerMaxHP);
+        enemyHP -= (damage || 0);
+
+        if (playerHP < 0) playerHP = 0;
+        if (enemyHP < 0) enemyHP = 0;
+
         document.getElementById("battleText").innerText = `Player used ${name}!`;
         updateEnemyDisplay();
         updatePlayerDisplay();
       }
+      function enemyMove(name, damage, heal) {
+        enemyHP += (heal || 0);
+        playerHP -= (damage || 0);
 
-      function enemyMove(name, damage, heal){
-        enemyHP += (heal||0);
-        playerCurrentHp -= (damage||0);
-        if(playerCurrentHp<0) playerCurrentHp=0;
-        if(enemyHP<0) enemyHP=0;
+        if (playerHP < 0) playerHP = 0;
+        if (enemyHP < 0) enemyHP = 0;
+
         document.getElementById("battleText").innerText = `Enemy used ${name}!`;
-        updateEnemyDisplay();
+        updateEnemyDisplay(); updatePlayerDisplay();
+      }
+
+      function awardRewards() {
+        const goldReward = 10 * enemyDiff;
+        playerGold += goldReward;
         updatePlayerDisplay();
       }
 
-      function checkBattleOutcome(){
-        if(playerCurrentHp<=0){
-          document.getElementById("battleText").innerText="You were defeated!";
+      function checkBattleOutcome() {
+        if (playerHP <= 0) {
+          battleActive = false; // Mark battle as over
+          document.getElementById("battleText").innerText = "You were defeated!";
           disableAttacks();
-        } else if(enemyHP<=0){
+          // Return to overworld after defeat with delay
+          setTimeout(() => {
+            returnToOverworld();
+          }, 3000);
+        } else if (enemyHP <= 0) {
+          // This should only be called if enemy died during enemy turn
+          battleActive = false; // Mark battle as over
           enemyImage = randomEnemy.animations.death; updateEnemyDisplay();
-          const goldReward = 10*enemyDiff;
-          playerGold += goldReward;
-          updatePlayerDisplay();
-          document.getElementById("battleText").innerText = `You defeated the ${enemyName}! +${goldReward} gold`;
+          const { goldReward } = awardRewards();
+          document.getElementById("battleText").innerText =
+            `You defeated the ${enemyName}! +${goldReward} gold. Returning to overworld...`;
           disableAttacks();
+          // Return to overworld after victory with delay
+          setTimeout(() => {
+            returnToOverworld();
+          }, 3000);
         }
       }
-
-      function disableAttacks(){
-        document.querySelectorAll(".attack-btn").forEach(b=>{ if(b.id!=="run-btn") b.disabled=true; });
+      function disableAttacks() {
+        document.querySelectorAll(".attack-btn").forEach(b => { if (b.id !== "run-btn") b.disabled = true; });
       }
 
-      window.playerAttack = function(index){
-        const a = playerAbilities[index]; if(!a) return;
-        move(a.name, a.damage, a.heal);
-        if(enemyHP<=0){ checkBattleOutcome(); return; }
+      // Battle state management
+      let battleActive = true;
+      let actionInProgress = false;
 
-        setTimeout(()=>{
+      window.playerAttack = function (index) {
+        // Prevent action if battle is over or another action is in progress
+        if (!battleActive || actionInProgress) return;
+
+        const a = playerAbilities[index];
+        if (!a) return;
+
+        // Set action in progress to prevent spamming
+        actionInProgress = true;
+
+        // Disable all attack buttons temporarily
+        document.querySelectorAll(".attack-btn").forEach(b => {
+          if (b.id !== "run-btn") b.disabled = true;
+        });
+
+        move(a.name, a.damage, a.heal);
+
+        if (enemyHP <= 0) {
+          // Enemy defeated - handle victory immediately
+          battleActive = false; // Mark battle as over
+          enemyImage = randomEnemy.animations.death;
+          updateEnemyDisplay();
+          const { goldReward } = awardRewards();
+          document.getElementById("battleText").innerText =
+            `You defeated the ${enemyName}! +${goldReward} gold. Returning to overworld...`;
+          disableAttacks();
+          // Return to overworld after victory with delay
+          setTimeout(() => {
+            returnToOverworld();
+          }, 3000);
+          return;
+        }
+
+        setTimeout(() => {
           enemyImage = randomEnemy.animations.attack; updateEnemyDisplay();
-          setTimeout(()=>{
-            const e = enemyAbilities[Math.floor(Math.random()*enemyAbilities.length)] || {name:"Swipe", damage:5, heal:0};
+          setTimeout(() => {
+            const e = enemyAbilities[Math.floor(Math.random() * enemyAbilities.length)] || { name: "Swipe", damage: 5, heal: 0 };
             enemyMove(e.name, e.damage, e.heal);
-            setTimeout(()=>{ enemyImage=randomEnemy.animations.idle; updateEnemyDisplay(); checkBattleOutcome(); },400);
-          },700);
-        },400);
+            setTimeout(() => {
+              enemyImage = randomEnemy.animations.idle;
+              updateEnemyDisplay();
+              checkBattleOutcome();
+
+              // Re-enable attack buttons if battle is still active
+              if (battleActive && playerHP > 0) {
+                document.querySelectorAll(".attack-btn").forEach(b => {
+                  if (b.id !== "run-btn") b.disabled = false;
+                });
+              }
+
+              // Reset action progress
+              actionInProgress = false;
+            }, 400);
+          }, 700);
+        }, 400);
       };
     }
 
-    window.runAway = function(){
-      // Save current player state in query string
-      const charCopy = {
-        name: playerName,
-        abilities: playerAbilities,
-        currentHp: playerCurrentHp,
-        maxHp: playerMaxHp,
-        gold: playerGold
-      };
-      qs.set("character", encodeURIComponent(JSON.stringify(charCopy)));
-      location.href = `overworld.html?${qs.toString()}`;
+    // Helper function to return to overworld with updated character data
+    function returnToOverworld() {
+      if (character) {
+        // Update character object with current battle state
+        character.currentHp = playerHP;
+        character.gold = playerGold;
+
+        // Create URL parameters
+        const charData = encodeURIComponent(JSON.stringify(character));
+        const params = new URLSearchParams();
+        params.set("character", charData);
+        params.set("region_type", regionKey);
+
+        location.href = `overworld.html?${params.toString()}`;
+      } else {
+        // Fallback to old parameter system
+        qs.set("hp", String(playerHP));
+        qs.set("gold", String(playerGold));
+        location.href = `overworld.html?${qs.toString()}`;
+      }
+    }
+
+    window.runAway = function () {
+      returnToOverworld();
     };
 
-    window.addEventListener("keydown", (e)=>{ if(e.key==="Escape") runAway(); });
-
+    window.addEventListener("keydown", (e) => { if (e.key === "Escape") runAway(); });
   </script>
 </body>
+
 </html>

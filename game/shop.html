@@ -1,201 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shop</title>
-  <link rel="stylesheet" href="battle.css">
-  <style>
-    :root {
-      --scene-w: 720px;
-      --scene-h: 504px;
-      --side-w: 320px;
-      --gap: 16px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop</title>
+    <link rel="stylesheet" href="battle.css">
+    <style>
+        :root {
+            --scene-w: 720px;
+            --scene-h: 504px;
+            --side-w: 320px;
+            --gap: 16px;
+        }
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background: url("../assets/overworld.png") center/cover no-repeat fixed;
-      color: #e7edf5;
-      text-align: center;
-    }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            background: url("../assets/overworld.png") center/cover no-repeat fixed;
+            color: #e7edf5;
+            text-align: center;
+        }
 
-    #shop-layout {
-      width: min(100%, calc(var(--scene-w) + var(--side-w) + var(--gap) + 24px));
-      margin: 0 auto 24px;
-      padding: 0 12px;
-      display: grid;
-      grid-template-columns: var(--scene-w) var(--side-w);
-      gap: var(--gap);
-      align-items: start;
-    }
+        #shop-layout {
+            width: min(100%, calc(var(--scene-w) + var(--side-w) + var(--gap) + 24px));
+            margin: 0 auto 24px;
+            padding: 0 12px;
+            display: grid;
+            grid-template-columns: var(--scene-w) var(--side-w);
+            gap: var(--gap);
+            align-items: start;
+        }
 
-    .scene {
-      position: relative;
-      width: var(--scene-w);
-      height: var(--scene-h);
-      margin: 8px auto;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: rgba(0,0,0,.25);
-      border-radius: 12px;
-    }
+        .scene {
+            position: relative;
+            width: var(--scene-w);
+            height: var(--scene-h);
+            margin: 8px auto;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, .25);
+            border-radius: 12px;
+        }
 
-    #character-image {
-      max-width: 50%;
-      image-rendering: pixelated;
-    }
+        #character-image {
+            max-width: 50%;
+            image-rendering: pixelated;
+        }
 
-    #console {
-      background: rgba(0,0,0,.35);
-      padding: 10px 12px;
-      border-radius: 8px;
-      text-align: left;
-      width: var(--scene-w);
-      margin: 0 auto;
-      min-height: 54px;
-      box-sizing: border-box;
-    }
+        #console {
+            background: rgba(0, 0, 0, .35);
+            padding: 10px 12px;
+            border-radius: 8px;
+            text-align: left;
+            width: var(--scene-w);
+            margin: 0 auto;
+            min-height: 54px;
+            box-sizing: border-box;
+        }
 
-    #sidebar { display: grid; gap: var(--gap); }
-    #character-info {
-      background: rgba(0,0,0,.75);
-      padding: 12px;
-      border-radius: 8px;
-      text-align: left;
-    }
+        #sidebar {
+            display: grid;
+            gap: var(--gap);
+        }
 
-    #shop-items { display: grid; gap: 10px; }
-    .shop-btn {
-      padding: 10px 12px;
-      border: 2px solid #3a4a5f;
-      background: #16212e;
-      color: #e7edf5;
-      border-radius: 10px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .shop-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  </style>
+        #character-info {
+            background: rgba(0, 0, 0, .75);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        #shop-items {
+            display: grid;
+            gap: 10px;
+        }
+
+        .shop-btn {
+            padding: 10px 12px;
+            border: 2px solid #3a4a5f;
+            background: #16212e;
+            color: #e7edf5;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shop-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
+
 <body>
-  <h1>Shop</h1>
+    <h1>Shop</h1>
 
-  <div id="shop-layout">
-    <div id="left">
-      <div class="scene">
-        <img id="character-image" alt="Character">
-      </div>
-      <div id="console"><p id="shop-text">Welcome to the shop!</p></div>
+    <div id="shop-layout">
+        <div id="left">
+            <div class="scene">
+                <img id="character-image" alt="Character">
+            </div>
+            <div id="console">
+                <p id="shop-text">Welcome to the shop!</p>
+            </div>
+        </div>
+
+        <!-- Shop Items Grid -->
+        <div id="shop-container" class="shop-grid">
+            <div class="shop-card">
+                <img src="../assets/sprites/card_background.png" class="card-bg" alt="Card Background">
+                <div class="item-info">
+                    <h3>Health Potion</h3>
+                    <p class="item-description">Restores 50 HP instantly</p>
+                    <p class="item-price">Cost: 25 Gold</p>
+                    <img src="../assets/sprites/select_button.png" class="buy-btn" data-item="health_restore"
+                        data-cost="25" alt="Buy Button">
+                </div>
+            </div>
+
+            <div id="shop-items">
+                <h4>Buy Permanent Buffs</h4>
+                <button class="shop-btn" id="buy-hp">+20 Max HP (50 Gold)</button>
+                <button class="shop-btn" id="upgrade-ability">Upgrade Ability Damage (+5) (100 Gold)</button>
+                <button class="shop-btn" id="exit-shop">Exit Shop</button>
+            </div>
+        </div>
     </div>
 
-    <div id="sidebar">
-      <div id="character-info">
-        <h3 id="player-name"></h3>
-        <p>HP: <span id="player-hp"></span> / <span id="player-maxhp"></span></p>
-        <p>Gold: <span id="player-gold"></span></p>
-        <h4>Abilities:</h4>
-        <ul id="player-abilities"></ul>
-      </div>
+    <script src="../assets/js/characters.js"></script>
+    <script>
+        const buttonSound = new Audio("../assets/sound/button_sound.mp3");
 
-      <div id="shop-items">
-        <h4>Buy Permanent Buffs</h4>
-        <button class="shop-btn" id="buy-hp">+20 Max HP (50 Gold)</button>
-        <button class="shop-btn" id="upgrade-ability">Upgrade Ability Damage (+5) (100 Gold)</button>
-        <button class="shop-btn" id="exit-shop">Exit Shop</button>
-      </div>
-    </div>
-  </div>
+        // Initialize shop with player data from URL
+        function initializeShop() {
+            const params = new URLSearchParams(window.location.search);
+            const charData = params.get("character");
 
-  <script src="../assets/js/characters.js"></script>
+            if (charData) {
+                const character = JSON.parse(decodeURIComponent(charData));
+                updatePlayerStats(character);
 
-  <script>
-    const qs = new URLSearchParams(location.search);
+                // Store character data globally for purchases
+                window.currentCharacter = character;
+            } else {
+                // Fallback if no character data
+                document.getElementById('gold-amount').textContent = 100;
+                document.getElementById('char-name').textContent = 'No Character';
+                document.getElementById('current-hp').textContent = 0;
+                document.getElementById('max-hp').textContent = 0;
+                document.getElementById('attack-power').textContent = 0;
+                window.currentCharacter = null;
+            }
+        }
 
-    // Load character from query param
-    let player = { name:"Hero", maxHp:20, currentHp:20, gold:0, abilities:[] };
-    const charData = qs.get("character");
-    if(charData){
-      player = JSON.parse(decodeURIComponent(charData));
-    }
+        // Function to update player stats display
+        function updatePlayerStats(character) {
+            if (!character) return;
 
-    const characterImage = document.getElementById("character-image");
-    const nameEl = document.getElementById("player-name");
-    const hpEl = document.getElementById("player-hp");
-    const maxHpEl = document.getElementById("player-maxhp");
-    const goldEl = document.getElementById("player-gold");
-    const abilitiesEl = document.getElementById("player-abilities");
-    const shopText = document.getElementById("shop-text");
+            document.getElementById('gold-amount').textContent = character.gold || 0;
+            document.getElementById('char-name').textContent = character.name || 'Unknown';
+            document.getElementById('current-hp').textContent = character.currentHp || 0;
+            document.getElementById('max-hp').textContent = character.maxHp || 0;
 
-    function updateHUD(){
-      nameEl.textContent = player.name;
-      hpEl.textContent = player.currentHp;
-      maxHpEl.textContent = player.maxHp;
-      goldEl.textContent = player.gold;
-      abilitiesEl.innerHTML = '';
-      player.abilities.forEach(a=>{
-        const li = document.createElement('li');
-        li.textContent = `${a.name} (Damage: ${a.damage})`;
-        abilitiesEl.appendChild(li);
-      });
-      characterImage.src = data.characters.find(c => c.name === player.name)?.image || '';
-    }
+            // Show only extra attack damage from purchases (0 if none)
+            const extraAttack = character.attackBonus || 0;
+            document.getElementById('attack-power').textContent = extraAttack;
+        }
 
-    updateHUD();
+        // Handle item purchases
+        function buyItem(itemType, cost) {
+            if (!window.currentCharacter) {
+                alert('No character data found!');
+                return;
+            }
 
-    // Buy HP
-    document.getElementById("buy-hp").addEventListener("click", ()=>{
-      if(player.gold >= 50){
-        player.gold -= 50;
-        player.maxHp += 20;
-        player.currentHp += 20;
-        shopText.textContent = "Max HP increased by 20!";
-        updateHUD();
-      } else {
-        shopText.textContent = "Not enough gold!";
-      }
-    });
+            const character = window.currentCharacter;
+            const currentGold = character.gold || 100;
 
-    // Upgrade abilities permanently
-    document.getElementById("upgrade-ability").addEventListener("click", ()=>{
-      if(player.gold < 100){
-        shopText.textContent = "Not enough gold!";
-        return;
-      }
-      if(player.abilities.length === 0){
-        shopText.textContent = "No abilities to upgrade!";
-        return;
-      }
+            if (currentGold < cost) {
+                alert('Not enough gold!');
+                return;
+            }
 
-      player.gold -= 100;
-      player.abilities.forEach(a => {
-        a.damage = (a.damage || 0) + 5;
-      });
-      shopText.textContent = "All abilities permanently increased by +5 damage!";
-      updateHUD();
-    });
+            // Apply item effects based on type
+            switch (itemType) {
+                case 'health_restore':
+                    // Check if already at max HP
+                    if (character.currentHp >= character.maxHp) {
+                        alert('HP is already at maximum!');
+                        return;
+                    }
 
-    // Exit shop
-    document.getElementById("exit-shop").addEventListener("click", ()=>{
-      qs.set("character", encodeURIComponent(JSON.stringify(player)));
-      location.href = `overworld.html?${qs.toString()}`;
-    });
+                    // Use healCharacter function to restore 50 HP with max HP cap
+                    const actualHealing = healCharacter(character, 50);
 
-    // Exit shop via Escape key
-    window.addEventListener("keydown", e=>{
-      if(e.key==="Escape"){
-        qs.set("character", encodeURIComponent(JSON.stringify(player)));
-        location.href = `overworld.html?${qs.toString()}`;
-      }
-    });
-  </script>
+                    // Only deduct gold if healing actually occurred
+                    if (actualHealing > 0) {
+                        character.gold = currentGold - cost;
+                        alert(`Health restored! Healed ${actualHealing} HP.`);
+                    } else {
+                        alert('HP is already at maximum!');
+                        return;
+                    }
+                    break;
+
+                case 'strength_buff':
+                    character.attackBonus = (character.attackBonus || 0) + 10;
+                    character.gold = currentGold - cost;
+                    alert('Strength increased! +10 Attack damage.');
+                    break;
+
+                case 'health_buff':
+                    character.maxHp = character.maxHp + 20;
+                    character.currentHp = character.currentHp + 20;
+                    character.gold = currentGold - cost;
+                    alert('Vitality increased! +20 Max HP.');
+                    break;
+            }
+
+            // Update all player stats display
+            updatePlayerStats(character);
+
+            // Update global character data
+            window.currentCharacter = character;
+        }
+
+        // Add event listeners to all buy buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            const buyButtons = document.querySelectorAll('.buy-btn');
+
+            buyButtons.forEach(button => {
+                // Pressed effect
+                button.addEventListener('mousedown', () => {
+                    button.src = "../assets/sprites/select_button_pressed.png";
+                    buttonSound.play();
+                });
+
+                // Purchase on release
+                button.addEventListener('mouseup', () => {
+                    button.src = "../assets/sprites/select_button.png";
+                    const itemType = button.getAttribute('data-item');
+                    const cost = parseInt(button.getAttribute('data-cost'));
+                    buyItem(itemType, cost);
+                });
+            });
+            // Initialize shop
+            initializeShop();
+        });
+
+        function goBack() {
+            if (window.currentCharacter) {
+                const charData = encodeURIComponent(JSON.stringify(window.currentCharacter));
+                window.location.href = `overworld.html?character=${charData}`;
+            } else {
+                window.location.href = 'overworld.html';
+            }
+        }
+    </script>
+
+    <script src="../assets/js/cursor.js"></script>
 </body>
+
 </html>

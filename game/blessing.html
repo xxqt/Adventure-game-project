@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blessing</title>
+    <link rel="stylesheet" href="blessing.css">
+</head>
+
+<body>
+    <div id="blessing-container">
+        <div id="blessing-message">
+            <h1>Divine Blessing</h1>
+            <p class="blessing-text">You have been blessed by the <br>Great Knight!</p>
+            <div id="blessing-effects">
+                <div class="effect-item">
+                    <span class="effect-label">Gold Received:</span>
+                    <span id="gold-bonus" class="effect-value">+50</span>
+                </div>
+                <div class="effect-item">
+                    <span class="effect-label">Attack Power:</span>
+                    <span id="attack-bonus" class="effect-value">+5</span>
+                </div>
+            </div>
+            <button id="continue-btn">Continue to Overworld</button>
+        </div>
+    </div>
+
+    <script src="../assets/js/characters.js"></script>
+    <script>
+        const buttonSound = new Audio("../assets/sound/button_sound.mp3");
+        const qs = new URLSearchParams(window.location.search);
+        const continueBtn = document.getElementById("continue-btn");
+
+        // Load character data from URL params
+        const charData = qs.get("character");
+        let character = null;
+
+        if (charData) {
+            // Decode and parse JSON
+            character = JSON.parse(decodeURIComponent(charData));
+
+            // Apply blessing effects
+            applyBlessing(character);
+        }
+
+        function applyBlessing(character) {
+            if (!character) return;
+
+            // Add 50 gold
+            const goldBonus = 50;
+            character.gold = (character.gold || 0) + goldBonus;
+
+            // Add 5 attack power to all abilities
+            const attackBonus = 5;
+            if (character.abilities) {
+                character.abilities.forEach(ability => {
+                    if (ability.damage) {
+                        ability.damage += attackBonus;
+                    }
+                });
+            }
+
+            // Update display
+            document.getElementById("gold-bonus").textContent = `+${goldBonus}`;
+            document.getElementById("attack-bonus").textContent = `+${attackBonus}`;
+        }
+
+        // Continue button functionality
+        continueBtn.addEventListener("click", () => {
+            buttonSound.currentTime = 0;
+            buttonSound.play();
+
+            if (character) {
+                // Preserve character data and add blessing flag
+                const charData = encodeURIComponent(JSON.stringify(character));
+                const params = new URLSearchParams();
+                params.set("character", charData);
+                params.set("blessed", "true");
+
+                // Navigate to overworld
+                window.location.href = `overworld.html?${params.toString()}`;
+            } else {
+                // Fallback if no character data
+                window.location.href = "overworld.html";
+            }
+        });
+
+        // Add touch support for mobile
+        continueBtn.addEventListener("touchend", (e) => {
+            e.preventDefault();
+            continueBtn.click();
+        }, { passive: false });
+    </script>
+
+    <script src="../assets/js/cursor.js"></script>
+</body>
+
+</html>
