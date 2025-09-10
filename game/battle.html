@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Battle Screen</title>
   <link rel="stylesheet" href="battle.css" />
   <style>
@@ -116,152 +117,155 @@
 
   <script>
     const qs = new URLSearchParams(location.search);
-    const regionKey = (qs.get("region_type") || "forest").toLowerCase();
-    const idx       = +qs.get("character_type") || 0;
-    let playerHP    = +qs.get("hp")   || 0;
-    let playerGold  = +qs.get("gold") || 0;
-    let playerMaxHP = 0;
 
-    let playerName = "Hero";
-    let playerAbilities = [
-      { name: "Strike", damage: 5, heal: 0 },
-      { name: "Guard",  damage: 0, heal: 3 },
-    ];
-
-    if (typeof data !== "undefined" && data.characters && data.characters[idx]) {
-      const c = data.characters[idx];
-      playerName      = c.name;
-      playerAbilities = c.abilities || playerAbilities;
-      if (!playerHP)   playerHP   = c.hp   || 20;
-      if (!playerGold) playerGold = c.gold || 0;
-      playerMaxHP      = c.hp     || 20;
-    } else {
-      if (!playerHP) playerHP = 20;
-      playerMaxHP = 20;
+    // Load full character object if passed from shop/selector
+    let player = null;
+    const charData = qs.get("character");
+    if(charData){
+      try { player = JSON.parse(decodeURIComponent(charData)); } 
+      catch(e){ console.warn("Invalid character data", e); }
     }
 
-    document.getElementById("player-name").textContent  = playerName;
-    document.getElementById("player-hp").textContent    = playerHP;
-    document.getElementById("player-maxhp").textContent = playerMaxHP;
-    document.getElementById("player-gold").textContent  = playerGold;
+    // Fallbacks if no full character object
+    const idx = +qs.get("character_type") || 0;
+    let playerCurrentHp = player?.currentHp ?? +qs.get("currentHp") ?? 20;
+    let playerMaxHp     = player?.maxHp     ?? +qs.get("maxHp") ?? 20;
+    let playerGold      = player?.gold      ?? +qs.get("gold") ?? 0;
+    let playerName      = player?.name      ?? (data.characters[idx]?.name || "Hero");
+    let playerAbilities = player?.abilities ?? (data.characters[idx]?.abilities || [
+      { name: "Strike", damage: 5, heal: 0 },
+      { name: "Guard",  damage: 0, heal: 3 },
+    ]);
 
-    document.querySelectorAll(".attack-btn").forEach((btn, i)=>{
-      if (btn.id === "run-btn") return;
+    // Display player info
+    const playerNameEl   = document.getElementById("player-name");
+    const playerHpEl     = document.getElementById("player-hp");
+    const playerMaxHpEl  = document.getElementById("player-maxhp");
+    const playerGoldEl   = document.getElementById("player-gold");
+
+    function updatePlayerDisplay(){
+      playerNameEl.textContent  = playerName;
+      playerHpEl.textContent    = playerCurrentHp;
+      playerMaxHpEl.textContent = playerMaxHp;
+      playerGoldEl.textContent  = playerGold;
+    }
+
+    updatePlayerDisplay();
+
+    // Set attack buttons
+    document.querySelectorAll(".attack-btn").forEach((btn,i)=>{
+      if(btn.id==="run-btn") return;
       const a = playerAbilities[i];
-      if (a) btn.textContent = a.name; else btn.style.display = "none";
+      if(a) btn.textContent = a.name;
+      else btn.style.display = "none";
     });
 
+    // Load region and enemy
+    const regionKey = (qs.get("region_type") || "forest").toLowerCase();
     const regionCfg = (typeof regions !== "undefined" && regions[regionKey]) ? regions[regionKey] : null;
-    const regionBg  = (regionCfg && regionCfg.battleBg) ? regionCfg.battleBg : "../assets/sprites/game_background.png";
+    const regionBg  = (regionCfg?.battleBg) ? regionCfg.battleBg : "../assets/sprites/game_background.png";
     document.getElementById("region-bg").style.backgroundImage = `url("${regionBg}")`;
 
     const catalog = (typeof enemies !== "undefined" && enemies.enemies) ? enemies.enemies : [];
     let pool = [];
-    if (regionCfg && Array.isArray(regionCfg.monstersByName)) {
-      pool = regionCfg.monstersByName.length ? catalog.filter(e => regionCfg.monstersByName.includes(e.name)) : [];
-    } else {
-      pool = catalog.slice();
-    }
+    if(regionCfg && Array.isArray(regionCfg.monstersByName)){
+      pool = regionCfg.monstersByName.length ? catalog.filter(e=>regionCfg.monstersByName.includes(e.name)) : [];
+    } else pool = catalog.slice();
 
-    if (!pool.length) {
+    if(!pool.length){
       document.getElementById("enemy-name").textContent = "No enemies here";
       document.getElementById("enemy-hp").textContent   = "";
       document.getElementById("enemy-image").style.display = "none";
       document.getElementById("battleText").textContent = "This area is safe.";
-      document.querySelectorAll(".attack-btn").forEach(b => { if (b.id !== "run-btn") b.disabled = true; });
-      window.playerAttack = function(){};
+      document.querySelectorAll(".attack-btn").forEach(b=>{ if(b.id!=="run-btn") b.disabled=true; });
+      window.playerAttack = ()=>{};
     } else {
-      const randomEnemy   = pool[Math.floor(Math.random() * pool.length)];
+      const randomEnemy   = pool[Math.floor(Math.random()*pool.length)];
       let enemyName       = randomEnemy.name;
       let enemyHP         = randomEnemy.hp;
       const enemyAbilities= randomEnemy.abilities || [];
       let enemyImage      = randomEnemy.animations.idle;
-      const enemyFlavor   = randomEnemy.flavor || "";
       const enemyDiff     = Number(randomEnemy.difficulty || 1);
 
       document.getElementById("enemy-name").textContent = enemyName;
       document.getElementById("enemy-hp").textContent   = enemyHP;
-      document.getElementById("battleText").textContent = `A wild ${enemyName} appears! ${enemyFlavor}`;
       document.getElementById("enemy-image").src        = enemyImage;
+      document.getElementById("battleText").textContent = `A wild ${enemyName} appears!`;
 
       function updateEnemyDisplay(){
         document.getElementById("enemy-hp").textContent = enemyHP;
         document.getElementById("enemy-image").src = enemyImage;
       }
-      function updatePlayerDisplay(){
-        document.getElementById("player-hp").textContent    = playerHP;
-        document.getElementById("player-maxhp").textContent = playerMaxHP;
-        document.getElementById("player-gold").textContent  = playerGold;
-      }
 
       function move(name, damage, heal){
-        // healing cannot exceed max HP
-        playerHP = Math.min(playerHP + (heal||0), playerMaxHP);
-        enemyHP  -= (damage||0);
-
-        if (playerHP < 0) playerHP = 0;
-        if (enemyHP  < 0) enemyHP  = 0;
-
+        playerCurrentHp = Math.min(playerCurrentHp + (heal||0), playerMaxHp);
+        enemyHP -= (damage||0);
+        if(playerCurrentHp<0) playerCurrentHp=0;
+        if(enemyHP<0) enemyHP=0;
         document.getElementById("battleText").innerText = `Player used ${name}!`;
-        updateEnemyDisplay(); updatePlayerDisplay();
-      }
-      function enemyMove(name, damage, heal){
-        enemyHP  += (heal||0);
-        playerHP -= (damage||0);
-
-        if (playerHP < 0) playerHP = 0;
-        if (enemyHP  < 0) enemyHP  = 0;
-
-        document.getElementById("battleText").innerText = `Enemy used ${name}!`;
-        updateEnemyDisplay(); updatePlayerDisplay();
-      }
-
-      function awardRewards(){
-        const goldReward = 10 * enemyDiff;
-        playerGold += goldReward;
+        updateEnemyDisplay();
         updatePlayerDisplay();
-        return { goldReward };
+      }
+
+      function enemyMove(name, damage, heal){
+        enemyHP += (heal||0);
+        playerCurrentHp -= (damage||0);
+        if(playerCurrentHp<0) playerCurrentHp=0;
+        if(enemyHP<0) enemyHP=0;
+        document.getElementById("battleText").innerText = `Enemy used ${name}!`;
+        updateEnemyDisplay();
+        updatePlayerDisplay();
       }
 
       function checkBattleOutcome(){
-        if (playerHP <= 0){
-          document.getElementById("battleText").innerText = "You were defeated!";
+        if(playerCurrentHp<=0){
+          document.getElementById("battleText").innerText="You were defeated!";
           disableAttacks();
-        } else if (enemyHP <= 0){
+        } else if(enemyHP<=0){
           enemyImage = randomEnemy.animations.death; updateEnemyDisplay();
-          const { goldReward } = awardRewards();
-          document.getElementById("battleText").innerText =
-            `You defeated the ${enemyName}! +${goldReward} gold`;
+          const goldReward = 10*enemyDiff;
+          playerGold += goldReward;
+          updatePlayerDisplay();
+          document.getElementById("battleText").innerText = `You defeated the ${enemyName}! +${goldReward} gold`;
           disableAttacks();
         }
       }
+
       function disableAttacks(){
-        document.querySelectorAll(".attack-btn").forEach(b => { if (b.id !== "run-btn") b.disabled = true; });
+        document.querySelectorAll(".attack-btn").forEach(b=>{ if(b.id!=="run-btn") b.disabled=true; });
       }
 
       window.playerAttack = function(index){
-        const a = playerAbilities[index]; if (!a) return;
+        const a = playerAbilities[index]; if(!a) return;
         move(a.name, a.damage, a.heal);
-        if (enemyHP <= 0) { checkBattleOutcome(); return; }
+        if(enemyHP<=0){ checkBattleOutcome(); return; }
 
         setTimeout(()=>{
           enemyImage = randomEnemy.animations.attack; updateEnemyDisplay();
           setTimeout(()=>{
             const e = enemyAbilities[Math.floor(Math.random()*enemyAbilities.length)] || {name:"Swipe", damage:5, heal:0};
             enemyMove(e.name, e.damage, e.heal);
-            setTimeout(()=>{ enemyImage = randomEnemy.animations.idle; updateEnemyDisplay(); checkBattleOutcome(); }, 400);
-          }, 700);
-        }, 400);
+            setTimeout(()=>{ enemyImage=randomEnemy.animations.idle; updateEnemyDisplay(); checkBattleOutcome(); },400);
+          },700);
+        },400);
       };
     }
 
     window.runAway = function(){
-      qs.set("hp",   String(playerHP));
-      qs.set("gold", String(playerGold));
+      // Save current player state in query string
+      const charCopy = {
+        name: playerName,
+        abilities: playerAbilities,
+        currentHp: playerCurrentHp,
+        maxHp: playerMaxHp,
+        gold: playerGold
+      };
+      qs.set("character", encodeURIComponent(JSON.stringify(charCopy)));
       location.href = `overworld.html?${qs.toString()}`;
     };
 
-    window.addEventListener("keydown", (e)=>{ if (e.key === "Escape") runAway(); });
+    window.addEventListener("keydown", (e)=>{ if(e.key==="Escape") runAway(); });
+
   </script>
 </body>
 </html>

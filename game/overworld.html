@@ -81,14 +81,29 @@
     // Carry current params
     const qs = new URLSearchParams(location.search);
 
-    // Character preview + status text
+    // Parse character from query
+    let character = null;
     (function init(){
-      const idx = Number(qs.get("character_type") || 0);
-      const i = Number.isFinite(idx) ? Math.max(0, Math.min(idx, (data.characters?.length || 1) - 1)) : 0;
-      const selected = data.characters[i] || data.characters[0];
+      const charData = qs.get("character");
+      if (charData) {
+        try {
+          character = JSON.parse(decodeURIComponent(charData));
+        } catch(e) {
+          console.error("Failed to parse character from query:", e);
+        }
+      }
 
-      const img = document.getElementById("overworld-character");
-      img.src = selected.image; img.alt = selected.name;
+      // If none passed, fall back to first character in characters.js
+      if (!character && data.characters?.length) {
+        character = data.characters[0];
+      }
+
+      // Character preview
+      if (character) {
+        const img = document.getElementById("overworld-character");
+        img.src = character.image;
+        img.alt = character.name;
+      }
 
       titleSpan.textContent = "Overworld";
 
@@ -106,12 +121,15 @@
     function go(region){
       buttonSound.currentTime = 0; buttonSound.play();
 
-      // update region + preserve other params (character_type, hp, xp, gold, etc.)
-      const next = new URLSearchParams(qs);
+      // update region + preserve character
+      const next = new URLSearchParams();
+      if (character) {
+        next.set("character", encodeURIComponent(JSON.stringify(character)));
+      }
       next.set("region_type", region);
 
       // decide destination
-      const dest = region === "shop" ? "maps/shop.html" : "battle.html";
+      const dest = region === "shop" ? "shop.html" : "battle.html";
 
       // navigate
       location.href = `${dest}?${next.toString()}`;
