@@ -2,15 +2,16 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Character Selector</title>
-  <link rel="stylesheet" href="character_selector.css" />
+  <link rel="stylesheet" href="character_selector.css">
 </head>
 
 <body>
   <h1>Character Selector</h1>
 
+  <!-- Container where characters will appear -->
   <div id="character-container" class="character-grid"></div>
   <script src="../assets/js/characters.js"></script>
 
@@ -18,7 +19,7 @@
     const buttonSound = new Audio("../assets/sound/button_sound.mp3");
     const container = document.getElementById("character-container");
 
-    data.characters.forEach((character, index) => {
+    data.characters.forEach(character => {
       const card = document.createElement("div");
       card.classList.add("character-card");
 
@@ -26,17 +27,19 @@
         <img src="${character.image}" alt="${character.name}" class="character-img">
         <div class="character-info">
           <h2>${character.name}</h2>
-          <p><strong>HP:</strong> ${character.currentHp} / ${character.maxHp}</p>
+          <p><strong>HP:</strong> ${character.maxHp}</p>
           <p><strong>Difficulty:</strong> ${character.difficulty}</p>
           <p class="flavor">${character.flavor}</p>
           <h3>Abilities</h3>
           <ul>
-            ${character.abilities.map(a => `
-              <li><strong>${a.name}:</strong> ${a.description}</li>
+            ${character.abilities.map(ability => `
+              <li><strong>${ability.name}:</strong> ${ability.description}</li>
             `).join("")}
           </ul>
-          <img src="../assets/sprites/select_button.png" class="select-btn" alt="Select Button">
-        </div>
+          <img src="../assets/sprites/select_button.png" 
+               class="select-btn" 
+               alt="Select Button">
+        </div> 
       `;
 
       const selectBtn = card.querySelector(".select-btn");
@@ -47,20 +50,15 @@
         buttonSound.play();
       });
 
-      // Release → go to overworld with character data
-      const go = () => {
+      // Release → pick character + go to overworld
+      selectBtn.addEventListener("mouseup", () => {
         selectBtn.src = "../assets/sprites/select_button.png";
         // Pass character name via query string
         const charData = encodeURIComponent(JSON.stringify(character));
         window.location.href = `overworld.html?character=${charData}`;
-      };
+        // window.location.href = `battle.html?character=${charData}`;
 
-      // Attach the click events
-      selectBtn.addEventListener("mouseup", go);
-      selectBtn.addEventListener("touchend", (e) => {
-        e.preventDefault();
-        go();
-      }, { passive: false });
+      });
 
       container.appendChild(card);
     });

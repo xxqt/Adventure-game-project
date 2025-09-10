@@ -1,26 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Overworld</title>
-  <link rel="stylesheet" href="overworld.css"/>
+  <link rel="stylesheet" href="overworld.css">
 </head>
 
 <body>
+
   <div id="title-container">
     <img id="overworld-title" src="../assets/sprites/title_bar.png" alt="Overworld Title">
     <span id="title_name">Overworld</span>
   </div>
 
-  <!-- Selected character image -->
-  <div id="overworld-character-wrap">
-    <img id="overworld-character" alt="Selected Character">
-  </div>
-
-  <!-- Status text window -->
-  <div id="status-panel">
-    <p id="status-text"></p>
+  <!-- Character Display Card -->
+  <div id="character-card" class="hero-card">
+    <div class="card-background">
+      <div class="character-portrait">
+        <img id="hero-image" src="" alt="Selected Hero">
+      </div>
+      <div class="character-stats">
+        <h2 id="hero-name"></h2>
+        <div class="stat-row">
+          <div class="stat-item">
+            <span class="stat-label">Health:</span>
+            <span id="hero-health" class="stat-value"></span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Gold:</span>
+            <span id="hero-gold" class="stat-value"></span>
+          </div>
+        </div>
+        <div class="character-flavor">
+          <p id="hero-flavor"></p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Status message -->
@@ -106,7 +123,7 @@
       });
     })();
   </script>
-
   <script src="../assets/js/cursor.js"></script>
 </body>
+
 </html>
