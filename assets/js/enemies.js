@@ -19,9 +19,9 @@ const enemies = {
     {
       "name": "Flying Eye",
       "animations": {
-        "idle": "../assets/enemies/flying_eye/flying_eye_idle.gif",
-        "attack": "../assets/enemies/flying_eye/flying_eye_attack.gif",
-        "death": "../assets/enemies/flying_eye/flying_eye_death.gif"
+        "idle": "../assets/enemies/flying eye/flying_eye_idle.gif",
+        "attack": "../assets/enemies/flying eye/flying_eye_attack.gif",
+        "death": "../assets/enemies/flying eye/flying_eye_death.gif"
       },
       "hp": 40,
       "difficulty": 2,
@@ -58,7 +58,7 @@ const enemies = {
       },
       "hp": 600,
       "difficulty": 5,
-      "gold": 100, // you can adjust reward
+      "gold": 100, 
       "flavor": "A dark wizard who wields destructive magic and empowers himself.",
       "abilities": [
         { "name": "Grand Fireball", "damage": 50, "heal": 0, "description": "Hurls a massive fireball that scorches the enemy." },

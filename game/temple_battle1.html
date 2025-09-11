@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Temple Battle 1</title>
+  <link rel="stylesheet" href="battle.css" />
+  <style>
+    :root {
+      --scene-w: 720px;
+      --scene-h: 504px;
+      --side-w: 320px;
+      --gap: 16px;
+      --monster-scale: 7;
+      --monster-nudge: 300px;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: url("../assets/overworld.png") center/cover no-repeat fixed;
+      color: #e7edf5;
+      text-align: center;
+    }
+
+    h1 { margin: 12px 0; }
+
+    #battle-layout {
+      width: min(100%, calc(var(--scene-w) + var(--side-w) + var(--gap) + 24px));
+      margin: 0 auto 24px;
+      padding: 0 12px;
+      display: grid;
+      grid-template-columns: var(--scene-w) var(--side-w);
+      gap: var(--gap);
+      align-items: start;
+    }
+
+    @media (max-width:1100px) { #battle-layout { grid-template-columns: 1fr; } }
+
+    .scene {
+      position: relative;
+      width: var(--scene-w);
+      height: var(--scene-h);
+      margin: 8px auto;
+      overflow: hidden;
+    }
+
+    #region-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
+      width: 100%;
+      height: 100%;
+    }
+
+    .frame-border {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      border: 10px solid #aeb3c3;
+      border-radius: 12px;
+      box-shadow: inset 0 0 0 2px #6b7485, 0 0 0 2px rgba(0, 0, 0, .35);
+    }
+
+    #enemy-image {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translate(calc(-50%), var(--monster-nudge)) scale(var(--monster-scale));
+      transform-origin: bottom center;
+      image-rendering: pixelated;
+      z-index: 3;
+      max-width: none;
+      max-height: none;
+    }
+
+    #console {
+      background: rgba(0, 0, 0, .35);
+      padding: 10px 12px;
+      border-radius: 8px;
+      text-align: left;
+      width: var(--scene-w);
+      margin: 0 auto;
+      min-height: 54px;
+      box-sizing: border-box;
+    }
+
+    #sidebar { display: grid; gap: var(--gap); }
+
+    #enemy-info, #character-info {
+      background: rgba(0, 0, 0, .75);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    #ability-buttons, #control-buttons {
+      display: grid;
+      gap: 10px;
+    }
+
+    .attack-btn, .action-btn {
+      padding: 10px 12px;
+      border: 2px solid #3a4a5f;
+      background: #16212e;
+      color: #e7edf5;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .disabled { opacity: 0.5; pointer-events: none; }
+  </style>
+</head>
+
+<body>
+  <h1>Temple Battle 1</h1>
+
+  <div id="battle-layout">
+    <div id="left">
+      <div class="scene">
+        <div id="region-bg"></div>
+        <img id="enemy-image" alt="Enemy" />
+        <div class="frame-border"></div>
+      </div>
+      <div id="console">
+        <p id="battleText">A temple enemy approaches!</p>
+      </div>
+    </div>
+
+    <div id="sidebar">
+      <div id="enemy-info">
+        <h3 id="enemy-name"></h3>
+        <p>HP: <span id="enemy-hp"></span></p>
+      </div>
+
+      <div id="character-info">
+        <h3 id="player-name"></h3>
+        <p>HP: <span id="player-hp"></span> / <span id="player-maxhp"></span></p>
+        <p>Gold: <span id="player-gold"></span></p>
+      </div>
+
+      <div id="ability-buttons">
+        <button class="attack-btn" id="ability-0" onclick="playerAttack(0)"></button>
+        <button class="attack-btn" id="ability-1" onclick="playerAttack(1)"></button>
+      </div>
+
+      <div id="control-buttons">
+        <button id="next-btn" class="action-btn disabled">Next</button>
+        <button id="exit-btn" class="action-btn">Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/characters.js"></script>
+  <script src="../assets/js/enemies.js"></script>
+  <script src="../assets/js/regions.js"></script>
+
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const regionKey = "temple";
+    const charData = qs.get("character");
+    let character = charData ? JSON.parse(decodeURIComponent(charData)) : null;
+
+    let playerHP = character?.currentHp ?? 100;
+    let playerMaxHP = character?.maxHp ?? 100;
+    let playerGold = character?.gold ?? 0;
+    let playerName = character?.name ?? "Hero";
+    let playerAbilities = character?.abilities ?? [{ name: "Strike", damage: 10 }, { name: "Guard", heal: 5 }];
+
+    document.getElementById("player-name").textContent = playerName;
+    document.getElementById("player-hp").textContent = playerHP;
+    document.getElementById("player-maxhp").textContent = playerMaxHP;
+    document.getElementById("player-gold").textContent = playerGold;
+
+    // Set button labels to ability names
+    playerAbilities.forEach((ability, i) => {
+      const btn = document.getElementById(`ability-${i}`);
+      if(ability && ability.name) btn.textContent = ability.name;
+      else btn.style.display = "none";
+    });
+
+    // Load temple battle background
+    const regionCfg = regions[regionKey];
+    const regionBg = regionCfg?.battleBg ?? "../assets/sprites/game_background.png";
+    document.getElementById("region-bg").style.backgroundImage = `url("${regionBg}")`;
+
+    // Select enemy from region pool
+    const catalog = enemies.enemies || [];
+    const pool = regionCfg?.monstersByName?.length ? 
+      catalog.filter(e => regionCfg.monstersByName.includes(e.name)) : catalog.slice();
+
+    let enemy = pool[Math.floor(Math.random() * pool.length)];
+    let enemyHP = enemy.hp;
+    let monsterDefeated = false;
+
+    document.getElementById("enemy-name").textContent = enemy.name;
+    document.getElementById("enemy-hp").textContent = enemyHP;
+    document.getElementById("enemy-image").src = enemy.animations.idle;
+
+    function updateEnemyDisplay() {
+      document.getElementById("enemy-hp").textContent = enemyHP;
+      document.getElementById("enemy-image").src = monsterDefeated ? enemy.animations.death : enemy.animations.idle;
+    }
+
+    function updatePlayerDisplay() {
+      document.getElementById("player-hp").textContent = playerHP;
+      document.getElementById("player-gold").textContent = playerGold;
+      if(character){ character.currentHp = playerHP; character.gold = playerGold; }
+    }
+
+    window.playerAttack = function(index) {
+      if(monsterDefeated) return;
+      const ability = playerAbilities[index];
+      if(!ability) return;
+
+      if(ability.damage) enemyHP -= ability.damage;
+      if(ability.heal) playerHP = Math.min(playerHP + ability.heal, playerMaxHP);
+
+      if(enemyHP <= 0) {
+        enemyHP = 0;
+        monsterDefeated = true;
+        document.getElementById("battleText").innerText = `You defeated ${enemy.name}!`;
+        document.getElementById("next-btn").classList.remove("disabled");
+      } else {
+        document.getElementById("battleText").innerText = `You used ${ability.name}!`;
+      }
+
+      updateEnemyDisplay();
+      updatePlayerDisplay();
+    };
+
+    // Next button
+    document.getElementById("next-btn").addEventListener("click", () => {
+      if(!monsterDefeated) return;
+      const params = new URLSearchParams();
+      if(character) params.set("character", encodeURIComponent(JSON.stringify(character)));
+      params.set("region_type", regionKey);
+      location.href = `temple_battle2.html?${params.toString()}`;
+    });
+
+    // Exit button
+    document.getElementById("exit-btn").addEventListener("click", () => {
+      const params = new URLSearchParams();
+      if(character) params.set("character", encodeURIComponent(JSON.stringify(character)));
+      params.set("region_type", regionKey);
+      location.href = `overworld.html?${params.toString()}`;
+    });
+
+    // ESC key
+    window.addEventListener("keydown", (e) => { if(e.key === "Escape") document.getElementById("exit-btn").click(); });
+  </script>
+</body>
+</html>

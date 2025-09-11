@@ -62,7 +62,6 @@
 
     let character = null;
     if (charData) {
-      // Decode and parse JSON
       character = JSON.parse(decodeURIComponent(charData));
 
       // Populate the character card
@@ -86,6 +85,17 @@
       }
     })();
 
+    // Destination mapper
+    function getDestination(region) {
+      switch (region) {
+        case "shop": return "shop.html";
+        case "forest": return "forest_battle.html";
+        case "temple": return "temple_battle1.html";
+        case "dungeon": return "dungeon.html";
+        default: return "overworld.html";
+      }
+    }
+
     // Navigate helper
     function go(region) {
       buttonSound.currentTime = 0;
@@ -93,20 +103,20 @@
 
       if (!character) return;
 
-      // Create new URL parameters preserving character data
+      // Preserve character data
       const charData = encodeURIComponent(JSON.stringify(character));
       const next = new URLSearchParams();
       next.set("character", charData);
       next.set("region_type", region);
 
-      // Decide destination ***important
-      const dest = region === "shop" ? "shop.html" : "battle.html";
+      // Correct destination
+      const dest = getDestination(region);
 
       // Navigate
       location.href = `${dest}?${next.toString()}`;
     }
 
-    // Wire buttons + set active state (only if region present)
+    // Wire buttons + set active state
     (function setupButtons() {
       const current = qs.get("region_type");
       if (current) {
