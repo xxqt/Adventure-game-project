@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Temple Battle 1</title>
   <link rel="stylesheet" href="battle.css" />
   <style>
@@ -24,7 +24,9 @@
       text-align: center;
     }
 
-    h1 { margin: 12px 0; }
+    h1 {
+      margin: 12px 0;
+    }
 
     #battle-layout {
       width: min(100%, calc(var(--scene-w) + var(--side-w) + var(--gap) + 24px));
@@ -36,7 +38,11 @@
       align-items: start;
     }
 
-    @media (max-width:1100px) { #battle-layout { grid-template-columns: 1fr; } }
+    @media (max-width:1100px) {
+      #battle-layout {
+        grid-template-columns: 1fr;
+      }
+    }
 
     .scene {
       position: relative;
@@ -91,21 +97,27 @@
       box-sizing: border-box;
     }
 
-    #sidebar { display: grid; gap: var(--gap); }
+    #sidebar {
+      display: grid;
+      gap: var(--gap);
+    }
 
-    #enemy-info, #character-info {
+    #enemy-info,
+    #character-info {
       background: rgba(0, 0, 0, .75);
       padding: 12px;
       border-radius: 8px;
       text-align: left;
     }
 
-    #ability-buttons, #control-buttons {
+    #ability-buttons,
+    #control-buttons {
       display: grid;
       gap: 10px;
     }
 
-    .attack-btn, .action-btn {
+    .attack-btn,
+    .action-btn {
       padding: 10px 12px;
       border: 2px solid #3a4a5f;
       background: #16212e;
@@ -114,7 +126,10 @@
       cursor: pointer;
     }
 
-    .disabled { opacity: 0.5; pointer-events: none; }
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   </style>
 </head>
 
@@ -152,7 +167,7 @@
 
       <div id="control-buttons">
         <button id="next-btn" class="action-btn disabled">Next</button>
-        <button id="exit-btn" class="action-btn">Exit</button>
+        <button id="run-btn" class="action-btn">Run</button>
       </div>
     </div>
   </div>
@@ -171,89 +186,158 @@
     let playerMaxHP = character?.maxHp ?? 100;
     let playerGold = character?.gold ?? 0;
     let playerName = character?.name ?? "Hero";
-    let playerAbilities = character?.abilities ?? [{ name: "Strike", damage: 10 }, { name: "Guard", heal: 5 }];
+    let playerAbilities = character?.abilities ?? [
+      { name: "Strike", damage: 10 },
+      { name: "Guard", heal: 5 }
+    ];
 
     document.getElementById("player-name").textContent = playerName;
     document.getElementById("player-hp").textContent = playerHP;
     document.getElementById("player-maxhp").textContent = playerMaxHP;
     document.getElementById("player-gold").textContent = playerGold;
 
-    // Set button labels to ability names
     playerAbilities.forEach((ability, i) => {
       const btn = document.getElementById(`ability-${i}`);
-      if(ability && ability.name) btn.textContent = ability.name;
+      if (ability && ability.name) btn.textContent = ability.name;
       else btn.style.display = "none";
     });
 
-    // Load temple battle background
     const regionCfg = regions[regionKey];
     const regionBg = regionCfg?.battleBg ?? "../assets/sprites/game_background.png";
     document.getElementById("region-bg").style.backgroundImage = `url("${regionBg}")`;
 
-    // Select enemy from region pool
     const catalog = enemies.enemies || [];
-    const pool = regionCfg?.monstersByName?.length ? 
+    const pool = regionCfg?.monstersByName?.length ?
       catalog.filter(e => regionCfg.monstersByName.includes(e.name)) : catalog.slice();
 
-    let enemy = pool[Math.floor(Math.random() * pool.length)];
-    let enemyHP = enemy.hp;
+    let randomEnemy = pool[Math.floor(Math.random() * pool.length)];
+    let enemyHP = randomEnemy.hp;
+    let enemyName = randomEnemy.name;
+    let enemyImage = randomEnemy.animations.idle;
+    let enemyAbilities = randomEnemy.abilities || [];
     let monsterDefeated = false;
 
-    document.getElementById("enemy-name").textContent = enemy.name;
+    document.getElementById("enemy-name").textContent = enemyName;
     document.getElementById("enemy-hp").textContent = enemyHP;
-    document.getElementById("enemy-image").src = enemy.animations.idle;
+    document.getElementById("enemy-image").src = enemyImage;
 
     function updateEnemyDisplay() {
       document.getElementById("enemy-hp").textContent = enemyHP;
-      document.getElementById("enemy-image").src = monsterDefeated ? enemy.animations.death : enemy.animations.idle;
+      document.getElementById("enemy-image").src = enemyImage;
     }
 
     function updatePlayerDisplay() {
       document.getElementById("player-hp").textContent = playerHP;
       document.getElementById("player-gold").textContent = playerGold;
-      if(character){ character.currentHp = playerHP; character.gold = playerGold; }
+      if (character) { character.currentHp = playerHP; character.gold = playerGold; }
     }
 
-    window.playerAttack = function(index) {
-      if(monsterDefeated) return;
-      const ability = playerAbilities[index];
-      if(!ability) return;
+    function disableAttacks() {
+      document.querySelectorAll(".attack-btn").forEach(b => {
+        if (b.id !== "run-btn") b.disabled = true;
+      });
+    }
 
-      if(ability.damage) enemyHP -= ability.damage;
-      if(ability.heal) playerHP = Math.min(playerHP + ability.heal, playerMaxHP);
-
-      if(enemyHP <= 0) {
-        enemyHP = 0;
-        monsterDefeated = true;
-        document.getElementById("battleText").innerText = `You defeated ${enemy.name}!`;
+    function checkBattleOutcome() {
+      if (playerHP <= 0) {
+        document.getElementById("battleText").innerText = "You were defeated!";
+        disableAttacks();
         document.getElementById("next-btn").classList.remove("disabled");
-      } else {
-        document.getElementById("battleText").innerText = `You used ${ability.name}!`;
-      }
+      } else if (enemyHP <= 0) {
+        enemyImage = randomEnemy.animations.death;
+        updateEnemyDisplay();
+        const goldReward = randomEnemy.gold ?? 0;
 
+        playerGold += goldReward;
+        document.getElementById("battleText").innerText =
+          `You defeated the ${enemyName}! +${goldReward} gold,`;
+        disableAttacks();
+        document.getElementById("next-btn").classList.remove("disabled");
+      }
+    }
+
+    function move(name, dmg, heal) {
+      let text = `You used ${name}! `;
+      if (dmg) {
+        enemyHP -= dmg;
+        if (enemyHP < 0) enemyHP = 0;   // ✅ prevent negative HP
+        text += `${enemyName} took ${dmg} damage. `;
+      }
+      if (heal) {
+        const healed = Math.min(heal, playerMaxHP - playerHP);
+        playerHP += healed;
+        text += `You healed for ${healed} HP. `;
+      }
+      document.getElementById("battleText").innerText = text;
       updateEnemyDisplay();
       updatePlayerDisplay();
+    }
+
+    function enemyMove(name, dmg, heal) {
+      let text = `${enemyName} used ${name}! `;
+      if (dmg) {
+        playerHP -= dmg;
+        if (playerHP < 0) playerHP = 0; // already in your code
+        text += `You took ${dmg} damage. `;
+      }
+      if (heal) {
+        enemyHP += heal;
+        if (enemyHP > randomEnemy.hp) enemyHP = randomEnemy.hp; // ✅ cap heal at max
+        text += `${enemyName} healed ${heal} HP.`;
+      }
+      document.getElementById("battleText").innerText = text;
+      updateEnemyDisplay();
+      updatePlayerDisplay();
+    }
+
+    window.playerAttack = function (index) {
+      const a = playerAbilities[index]; if (!a) return;
+      move(a.name, a.damage, a.heal);
+      if (enemyHP <= 0) { checkBattleOutcome(); return; }
+
+      setTimeout(() => {
+        enemyImage = randomEnemy.animations.attack;
+        updateEnemyDisplay();
+        setTimeout(() => {
+          const e = enemyAbilities[Math.floor(Math.random() * enemyAbilities.length)] || { name: "Swipe", damage: 5, heal: 0 };
+          enemyMove(e.name, e.damage, e.heal);
+          setTimeout(() => {
+            enemyImage = randomEnemy.animations.idle;
+            updateEnemyDisplay();
+            checkBattleOutcome();
+          }, 400);
+        }, 700);
+      }, 400);
     };
 
     // Next button
     document.getElementById("next-btn").addEventListener("click", () => {
-      if(!monsterDefeated) return;
       const params = new URLSearchParams();
-      if(character) params.set("character", encodeURIComponent(JSON.stringify(character)));
+      if (character) params.set("character", encodeURIComponent(JSON.stringify(character)));
       params.set("region_type", regionKey);
-      location.href = `temple_battle2.html?${params.toString()}`;
+
+      if (playerHP <= 0) {
+        location.href = `overworld.html?${params.toString()}`;
+      } else if (monsterDefeated || enemyHP <= 0) {
+        location.href = `temple_battle2.html?${params.toString()}`;
+      }
     });
 
     // Exit button
-    document.getElementById("exit-btn").addEventListener("click", () => {
+    document.getElementById("run-btn").addEventListener("click", () => {
       const params = new URLSearchParams();
-      if(character) params.set("character", encodeURIComponent(JSON.stringify(character)));
+      if (character) params.set("character", encodeURIComponent(JSON.stringify(character)));
       params.set("region_type", regionKey);
       location.href = `overworld.html?${params.toString()}`;
     });
 
+
+
     // ESC key
-    window.addEventListener("keydown", (e) => { if(e.key === "Escape") document.getElementById("exit-btn").click(); });
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") document.getElementById("run-btn").click();
+    });
   </script>
 </body>
+
 </html>

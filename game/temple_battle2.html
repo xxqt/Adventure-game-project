@@ -36,15 +36,13 @@
       align-items: start;
     }
 
-    @media (max-width:1100px) {
-      #battle-layout { grid-template-columns: 1fr; }
-    }
+    @media (max-width:1100px) { #battle-layout { grid-template-columns: 1fr; } }
 
     .scene {
       position: relative;
       width: var(--scene-w);
       height: var(--scene-h);
-      margin: 8px auto 8px;
+      margin: 8px auto;
       overflow: hidden;
     }
 
@@ -59,8 +57,6 @@
       width: 100%;
       height: 100%;
     }
-
-    #frame { display: none; }
 
     .frame-border {
       position: absolute;
@@ -104,13 +100,12 @@
       text-align: left;
     }
 
-    #ability-buttons {
+    #ability-buttons, #control-buttons {
       display: grid;
-      grid-template-columns: 1fr;
       gap: 10px;
     }
 
-    .attack-btn {
+    .attack-btn, .action-btn {
       padding: 10px 12px;
       border: 2px solid #3a4a5f;
       background: #16212e;
@@ -118,6 +113,8 @@
       border-radius: 10px;
       cursor: pointer;
     }
+
+    .disabled { opacity: 0.5; pointer-events: none; }
   </style>
 </head>
 
@@ -129,12 +126,10 @@
       <div class="scene">
         <div id="region-bg"></div>
         <img id="enemy-image" alt="Enemy" />
-        <img id="frame" src="../assets/sprites/battle_background.png" alt="Frame" />
         <div class="frame-border"></div>
       </div>
-
       <div id="console">
-        <p id="battleText">Ambush!</p>
+        <p id="battleText">Another temple enemy appears!</p>
       </div>
     </div>
 
@@ -143,15 +138,21 @@
         <h3 id="enemy-name"></h3>
         <p>HP: <span id="enemy-hp"></span></p>
       </div>
+
       <div id="character-info">
         <h3 id="player-name"></h3>
         <p>HP: <span id="player-hp"></span> / <span id="player-maxhp"></span></p>
         <p>Gold: <span id="player-gold"></span></p>
       </div>
+
       <div id="ability-buttons">
-        <button class="attack-btn" onclick="playerAttack(0)">Attack 1</button>
-        <button class="attack-btn" onclick="playerAttack(1)">Attack 2</button>
-        <button class="attack-btn" id="run-btn" onclick="runAway()">Exit</button>
+        <button class="attack-btn" id="ability-0" onclick="playerAttack(0)"></button>
+        <button class="attack-btn" id="ability-1" onclick="playerAttack(1)"></button>
+      </div>
+
+      <div id="control-buttons">
+        <button id="run-btn" class="action-btn">Run</button>
+        <button id="next-btn" class="action-btn disabled">Next</button>
       </div>
     </div>
   </div>
@@ -162,209 +163,170 @@
 
   <script>
     const qs = new URLSearchParams(location.search);
-    const regionKey = (qs.get("region_type") || "temple").toLowerCase();
-
-    // Character handling
+    const regionKey = "temple";
     const charData = qs.get("character");
-    let character = null;
-    let playerHP, playerGold, playerMaxHP, playerName, playerAbilities;
+    let character = charData ? JSON.parse(decodeURIComponent(charData)) : null;
 
-    if (charData) {
-      character = JSON.parse(decodeURIComponent(charData));
-      playerName = character.name;
-      playerHP = character.currentHp;
-      playerMaxHP = character.maxHp;
-      playerGold = character.gold || 0;
-      playerAbilities = character.abilities;
-    } else {
-      const idx = +qs.get("character_type") || 0;
-      playerHP = +qs.get("hp") || 0;
-      playerGold = +qs.get("gold") || 0;
-      playerName = "Hero";
-      playerAbilities = [
-        { name: "Strike", damage: 5, heal: 0 },
-        { name: "Guard", damage: 0, heal: 3 },
-      ];
+    let playerHP = character?.currentHp ?? 100;
+    let playerMaxHP = character?.maxHp ?? 100;
+    let playerGold = character?.gold ?? 0;
+    let playerName = character?.name ?? "Hero";
+    let playerAbilities = character?.abilities ?? [
+      { name: "Strike", damage: 10 },
+      { name: "Guard", heal: 5 }
+    ];
 
-      if (typeof data !== "undefined" && data.characters && data.characters[idx]) {
-        const c = data.characters[idx];
-        playerName = c.name;
-        playerAbilities = c.abilities || playerAbilities;
-        if (!playerHP) playerHP = c.currentHp || c.maxHp || 20;
-        if (!playerGold) playerGold = c.gold || 0;
-        playerMaxHP = c.maxHp || 20;
-      } else {
-        if (!playerHP) playerHP = 20;
-        playerMaxHP = 20;
-      }
-    }
-
-    // UI setup
     document.getElementById("player-name").textContent = playerName;
     document.getElementById("player-hp").textContent = playerHP;
     document.getElementById("player-maxhp").textContent = playerMaxHP;
     document.getElementById("player-gold").textContent = playerGold;
 
-    document.querySelectorAll(".attack-btn").forEach((btn, i) => {
-      if (btn.id === "run-btn") return;
-      const a = playerAbilities[i];
-      if(a) btn.textContent = a.name;
+    playerAbilities.forEach((ability, i) => {
+      const btn = document.getElementById(`ability-${i}`);
+      if (ability && ability.name) btn.textContent = ability.name;
       else btn.style.display = "none";
     });
 
-    // Region setup
-    const regionCfg = (typeof regions !== "undefined" && regions[regionKey]) ? regions[regionKey] : null;
-    const regionBg = (regionCfg && regionCfg.battleBg) ? regionCfg.battleBg : "../assets/sprites/game_background.png";
+    // Region background
+    const regionCfg = regions[regionKey];
+    const regionBg = regionCfg?.battleBg ?? "../assets/sprites/game_background.png";
     document.getElementById("region-bg").style.backgroundImage = `url("${regionBg}")`;
 
-    const catalog = (typeof enemies !== "undefined" && enemies.enemies) ? enemies.enemies : [];
-    let pool = [];
-    if(regionCfg && Array.isArray(regionCfg.monstersByName)){
-      pool = regionCfg.monstersByName.length ? catalog.filter(e=>regionCfg.monstersByName.includes(e.name)) : [];
-    } else pool = catalog.slice();
+    // Enemy selection
+    const catalog = enemies.enemies || [];
+    const pool = regionCfg?.monstersByName?.length ?
+      catalog.filter(e => regionCfg.monstersByName.includes(e.name)) : catalog.slice();
 
-    if(!pool.length){
-      document.getElementById("enemy-name").textContent = "No enemies here";
-      document.getElementById("enemy-hp").textContent = "";
-      document.getElementById("enemy-image").style.display = "none";
-      document.getElementById("battleText").textContent = "This area is safe.";
-      document.querySelectorAll(".attack-btn").forEach(b => { if (b.id !== "run-btn") b.disabled = true; });
-      window.playerAttack = function () { };
-    } else {
-      const randomEnemy = pool[Math.floor(Math.random() * pool.length)];
-      let enemyName = randomEnemy.name;
-      let enemyHP = randomEnemy.hp;
-      const enemyAbilities = randomEnemy.abilities || [];
-      let enemyImage = randomEnemy.animations.idle;
-      const enemyFlavor = randomEnemy.flavor || "";
-      const enemyDiff = Number(randomEnemy.difficulty || 1);
+    let randomEnemy = pool[Math.floor(Math.random() * pool.length)];
+    let enemyHP = randomEnemy.hp;
+    let enemyName = randomEnemy.name;
+    let enemyImage = randomEnemy.animations.idle;
+    let enemyAbilities = randomEnemy.abilities || [{ name: "Swipe", damage: 5, heal: 0 }];
 
-      document.getElementById("enemy-name").textContent = enemyName;
+    document.getElementById("enemy-name").textContent = enemyName;
+    document.getElementById("enemy-hp").textContent = enemyHP;
+    document.getElementById("enemy-image").src = enemyImage;
+
+    function updateEnemyDisplay() {
       document.getElementById("enemy-hp").textContent = enemyHP;
-      document.getElementById("battleText").textContent = `A wild ${enemyName} appears! ${enemyFlavor}`;
       document.getElementById("enemy-image").src = enemyImage;
+    }
 
-      function updateEnemyDisplay() {
-        document.getElementById("enemy-hp").textContent = enemyHP;
-        document.getElementById("enemy-image").src = enemyImage;
-      }
-      function updatePlayerDisplay() {
-        document.getElementById("player-hp").textContent = playerHP;
-        document.getElementById("player-maxhp").textContent = playerMaxHP;
-        document.getElementById("player-gold").textContent = playerGold;
-        if (character) {
-          character.currentHp = playerHP;
-          character.gold = playerGold;
-        }
-      }
+    function updatePlayerDisplay() {
+      document.getElementById("player-hp").textContent = playerHP;
+      document.getElementById("player-gold").textContent = playerGold;
+      if (character) { character.currentHp = playerHP; character.gold = playerGold; }
+    }
 
-      function move(name, damage, heal) {
-        playerHP = Math.min(playerHP + (heal || 0), playerMaxHP);
-        enemyHP -= (damage || 0);
-        if (playerHP < 0) playerHP = 0;
-        if (enemyHP < 0) enemyHP = 0;
-        document.getElementById("battleText").innerText = `Player used ${name}!`;
-        updateEnemyDisplay(); updatePlayerDisplay();
-      }
-      function enemyMove(name, damage, heal) {
-        enemyHP += (heal || 0);
-        playerHP -= (damage || 0);
-        if (playerHP < 0) playerHP = 0;
-        if (enemyHP < 0) enemyHP = 0;
-        document.getElementById("battleText").innerText = `Enemy used ${name}!`;
-        updateEnemyDisplay(); updatePlayerDisplay();
-      }
+    function disableAttacks() {
+      document.querySelectorAll(".attack-btn").forEach(b => {
+        b.classList.add("disabled");
+        b.disabled = true;
+      });
+    }
 
-      function awardRewards() {
-        const goldReward = 10 * enemyDiff;
+    function enableAttacks() {
+      document.querySelectorAll(".attack-btn").forEach(b => {
+        b.classList.remove("disabled");
+        b.disabled = false;
+      });
+    }
+
+    function checkBattleOutcome() {
+      if (playerHP <= 0) {
+        document.getElementById("battleText").innerText = "You were defeated!";
+        disableAttacks();
+        document.getElementById("next-btn").classList.remove("disabled");
+      } else if (enemyHP <= 0) {
+        enemyImage = randomEnemy.animations.death;
+        updateEnemyDisplay();
+        const goldReward = randomEnemy.gold ?? 0;
+
         playerGold += goldReward;
-        updatePlayerDisplay();
-        return goldReward;
+        document.getElementById("battleText").innerText =
+          `You defeated the ${enemyName}! +${goldReward} gold`;
+        disableAttacks();
+        document.getElementById("next-btn").classList.remove("disabled");
       }
+    }
 
-      function checkBattleOutcome() {
-        if (playerHP <= 0) {
-          battleActive = false;
-          document.getElementById("battleText").innerText = "You were defeated!";
-          disableAttacks();
-          setTimeout(() => { goToBlessing(); }, 3000);
-        } else if (enemyHP <= 0) {
-          battleActive = false;
-          enemyImage = randomEnemy.animations.death; updateEnemyDisplay();
-          const goldReward = awardRewards();
-          document.getElementById("battleText").innerText =
-            `You defeated the ${enemyName}! +${goldReward} gold.`;
-          disableAttacks();
-          setTimeout(() => { goToBlessing(); }, 3000);
-        }
+    function move(name, dmg, heal) {
+      let text = `You used ${name}! `;
+      if (dmg) {
+        enemyHP -= dmg;
+        if (enemyHP < 0) enemyHP = 0;   // ✅ prevent negative HP
+        text += `${enemyName} took ${dmg} damage. `;
       }
-      function disableAttacks() {
-        document.querySelectorAll(".attack-btn").forEach(b => { if (b.id !== "run-btn") b.disabled = true; });
+      if (heal) {
+        const healed = Math.min(heal, playerMaxHP - playerHP);
+        playerHP += healed;
+        text += `You healed for ${healed} HP. `;
       }
+      document.getElementById("battleText").innerText = text;
+      updateEnemyDisplay();
+      updatePlayerDisplay();
+    }
 
-      let battleActive = true;
-      let actionInProgress = false;
+    function enemyMove(name, dmg, heal) {
+      let text = `${enemyName} used ${name}! `;
+      if (dmg) {
+        playerHP -= dmg;
+        if (playerHP < 0) playerHP = 0;
+        text += `You took ${dmg} damage. `;
+      }
+      if (heal) {
+        enemyHP += heal;
+        if (enemyHP > randomEnemy.hp) enemyHP = randomEnemy.hp; // ✅ cap heal at max
+        text += `${enemyName} healed ${heal} HP.`;
+      }
+      document.getElementById("battleText").innerText = text;
+      updateEnemyDisplay();
+      updatePlayerDisplay();
+    }
 
-      window.playerAttack = function (index) {
-        if (!battleActive || actionInProgress) return;
-        const a = playerAbilities[index];
-        if (!a) return;
-        actionInProgress = true;
-        document.querySelectorAll(".attack-btn").forEach(b => { if (b.id !== "run-btn") b.disabled = true; });
-        move(a.name, a.damage, a.heal);
+    window.playerAttack = function (index) {
+      const a = playerAbilities[index]; if (!a) return;
+      disableAttacks();
+      move(a.name, a.damage, a.heal);
+      if (enemyHP <= 0) { checkBattleOutcome(); return; }
 
-        if (enemyHP <= 0) {
-          battleActive = false;
-          enemyImage = randomEnemy.animations.death;
-          updateEnemyDisplay();
-          const goldReward = awardRewards();
-          document.getElementById("battleText").innerText =
-            `You defeated the ${enemyName}! +${goldReward} gold.`;
-          disableAttacks();
-          setTimeout(() => { goToBlessing(); }, 3000);
-          return;
-        }
-
+      setTimeout(() => {
+        enemyImage = randomEnemy.animations.attack;
+        updateEnemyDisplay();
         setTimeout(() => {
-          enemyImage = randomEnemy.animations.attack; updateEnemyDisplay();
+          const e = enemyAbilities[Math.floor(Math.random() * enemyAbilities.length)] || { name: "Swipe", damage: 5, heal: 0 };
+          enemyMove(e.name, e.damage, e.heal);
           setTimeout(() => {
-            const e = enemyAbilities[Math.floor(Math.random() * enemyAbilities.length)] || { name: "Swipe", damage: 5, heal: 0 };
-            enemyMove(e.name, e.damage, e.heal);
-            setTimeout(() => {
-              enemyImage = randomEnemy.animations.idle; updateEnemyDisplay();
-              checkBattleOutcome();
-              if (battleActive && playerHP > 0) {
-                document.querySelectorAll(".attack-btn").forEach(b => { if (b.id !== "run-btn") b.disabled = false; });
-              }
-              actionInProgress = false;
-            }, 400);
-          }, 700);
-        }, 400);
-      };
-    }
-
-
-    function goToBlessing() {
-      if (character) {
-        character.currentHp = playerHP;
-        character.gold = playerGold;
-        const charData = encodeURIComponent(JSON.stringify(character));
-        const params = new URLSearchParams();
-        params.set("character", charData);
-        params.set("region_type", regionKey);
-        location.href = `blessing.html?${params.toString()}`;
-      } else {
-        qs.set("hp", String(playerHP));
-        qs.set("gold", String(playerGold));
-        location.href = `blessing.html?${qs.toString()}`;
-      }
-    }
-
-    window.runAway = function () {
-      goToBlessing();
+            enemyImage = randomEnemy.animations.idle;
+            updateEnemyDisplay();
+            checkBattleOutcome();
+            if (playerHP > 0 && enemyHP > 0) enableAttacks();
+          }, 400);
+        }, 700);
+      }, 400);
     };
 
-    window.addEventListener("keydown", (e) => { if (e.key === "Escape") runAway(); });
+    // Next button → blessing.html
+    document.getElementById("next-btn").addEventListener("click", () => {
+      const params = new URLSearchParams();
+      if (character) params.set("character", encodeURIComponent(JSON.stringify(character)));
+      params.set("region_type", regionKey);
+      location.href = `blessing.html?${params.toString()}`;
+    });
+
+    // Exit button
+    document.getElementById("Run-btn").addEventListener("click", () => {
+      const params = new URLSearchParams();
+      if (character) params.set("character", encodeURIComponent(JSON.stringify(character)));
+      params.set("region_type", regionKey);
+      location.href = `overworld.html?${params.toString()}`;
+    });
+
+    // ESC key
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") document.getElementById("run-btn").click();
+    });
   </script>
+  <script src="../assets/js/cursor.js"></script>
 </body>
 </html>

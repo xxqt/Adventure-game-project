@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dungeon Battle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dungeon Boss</title>
   <link rel="stylesheet" href="battle.css" />
   <style>
     :root {
@@ -12,8 +12,8 @@
       --scene-h: 504px;
       --side-w: 320px;
       --gap: 16px;
-      --monster-scale: 6.5;
-      --monster-nudge: 280px;
+      --monster-scale: 7;
+      --monster-nudge: 300px;
     }
 
     body {
@@ -24,7 +24,9 @@
       text-align: center;
     }
 
-    h1 { margin: 12px 0; }
+    h1 {
+      margin: 12px 0;
+    }
 
     #battle-layout {
       width: min(100%, calc(var(--scene-w) + var(--side-w) + var(--gap) + 24px));
@@ -36,7 +38,11 @@
       align-items: start;
     }
 
-    @media (max-width:1100px) { #battle-layout { grid-template-columns: 1fr; } }
+    @media (max-width:1100px) {
+      #battle-layout {
+        grid-template-columns: 1fr;
+      }
+    }
 
     .scene {
       position: relative;
@@ -91,21 +97,27 @@
       box-sizing: border-box;
     }
 
-    #sidebar { display: grid; gap: var(--gap); }
+    #sidebar {
+      display: grid;
+      gap: var(--gap);
+    }
 
-    #enemy-info, #character-info {
+    #enemy-info,
+    #character-info {
       background: rgba(0, 0, 0, .75);
       padding: 12px;
       border-radius: 8px;
       text-align: left;
     }
 
-    #ability-buttons, #control-buttons {
+    #ability-buttons,
+    #control-buttons {
       display: grid;
       gap: 10px;
     }
 
-    .attack-btn, .action-btn {
+    .attack-btn,
+    .action-btn {
       padding: 10px 12px;
       border: 2px solid #3a4a5f;
       background: #16212e;
@@ -113,11 +125,16 @@
       border-radius: 10px;
       cursor: pointer;
     }
+
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   </style>
 </head>
 
 <body>
-  <h1>Dungeon Battle</h1>
+  <h1>Dungeon Boss</h1>
 
   <div id="battle-layout">
     <div id="left">
@@ -127,7 +144,7 @@
         <div class="frame-border"></div>
       </div>
       <div id="console">
-        <p id="battleText">A dungeon enemy appears!</p>
+        <p id="battleText">A boss enemy approaches!</p>
       </div>
     </div>
 
@@ -149,6 +166,7 @@
       </div>
 
       <div id="control-buttons">
+
         <button id="exit-btn" class="action-btn">Exit</button>
       </div>
     </div>
@@ -178,40 +196,34 @@
     document.getElementById("player-maxhp").textContent = playerMaxHP;
     document.getElementById("player-gold").textContent = playerGold;
 
-    // Ability labels
     playerAbilities.forEach((ability, i) => {
       const btn = document.getElementById(`ability-${i}`);
       if (ability && ability.name) btn.textContent = ability.name;
       else btn.style.display = "none";
     });
 
-    // Background
     const regionCfg = regions[regionKey];
     const regionBg = regionCfg?.battleBg ?? "../assets/sprites/game_background.png";
     document.getElementById("region-bg").style.backgroundImage = `url("${regionBg}")`;
 
-    // Enemy selection
     const catalog = enemies.enemies || [];
     const pool = regionCfg?.monstersByName?.length ?
-      catalog.filter(e => regionCfg.monstersByName.includes(e.name)) :
-      catalog.slice();
+      catalog.filter(e => regionCfg.monstersByName.includes(e.name)) : catalog.slice();
 
-    let enemy = pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : {
-      name: "Training Dummy",
-      hp: 1,
-      animations: { idle: "../assets/sprites/dummy.png", death: "../assets/sprites/dummy_dead.png" }
-    };
-
-    let enemyHP = enemy.hp;
+    let randomEnemy = pool[Math.floor(Math.random() * pool.length)];
+    let enemyHP = randomEnemy.hp;
+    let enemyName = randomEnemy.name;
+    let enemyImage = (randomEnemy.animations && randomEnemy.animations.idle) ? randomEnemy.animations.idle : "";
+    let enemyAbilities = randomEnemy.abilities || [{ name: "Swipe", damage: 5, heal: 0 }];
     let monsterDefeated = false;
 
-    document.getElementById("enemy-name").textContent = enemy.name;
+    document.getElementById("enemy-name").textContent = enemyName;
     document.getElementById("enemy-hp").textContent = enemyHP;
-    document.getElementById("enemy-image").src = enemy.animations.idle;
+    document.getElementById("enemy-image").src = enemyImage;
 
     function updateEnemyDisplay() {
       document.getElementById("enemy-hp").textContent = enemyHP;
-      document.getElementById("enemy-image").src = monsterDefeated ? enemy.animations.death : enemy.animations.idle;
+      document.getElementById("enemy-image").src = enemyImage;
     }
 
     function updatePlayerDisplay() {
@@ -220,27 +232,118 @@
       if (character) { character.currentHp = playerHP; character.gold = playerGold; }
     }
 
-    window.playerAttack = function(index) {
-      if (monsterDefeated) return;
-      const ability = playerAbilities[index];
-      if (!ability) return;
+    function disableAttacks() {
+      document.querySelectorAll(".attack-btn").forEach(b => {
+        b.classList.add("disabled");
+        b.disabled = true;
+      });
+    }
 
-      if (ability.damage) enemyHP -= ability.damage;
-      if (ability.heal) playerHP = Math.min(playerHP + ability.heal, playerMaxHP);
+    function enableAttacks() {
+      document.querySelectorAll(".attack-btn").forEach(b => {
+        b.classList.remove("disabled");
+        b.disabled = false;
+      });
+    }
 
-      if (enemyHP <= 0) {
-        enemyHP = 0;
+    function checkBattleOutcome() {
+      if (playerHP <= 0) {
+        document.getElementById("battleText").innerText = "You were defeated!";
+        disableAttacks();
+
+        // after short delay return player to overworld with character state
+        setTimeout(() => {
+          const params = new URLSearchParams();
+          if (character) params.set("character", encodeURIComponent(JSON.stringify(character)));
+          params.set("region_type", regionKey);
+          location.href = `overworld.html?${params.toString()}`;
+        }, 1200);
+
+      } else if (enemyHP <= 0) {
+        enemyImage = (randomEnemy.animations && randomEnemy.animations.death) ? randomEnemy.animations.death : enemyImage;
+        updateEnemyDisplay();
+        const goldReward = randomEnemy.gold ?? 0;
+        const xpReward = randomEnemy.xp ?? 0;
+        playerGold += goldReward;
+        document.getElementById("battleText").innerText =
+          `You defeated the ${enemyName}! +${goldReward} gold, +${xpReward.toFixed(2)} xp`;
+        disableAttacks();
         monsterDefeated = true;
-        document.getElementById("battleText").innerText = `You defeated ${enemy.name}!`;
-      } else {
-        document.getElementById("battleText").innerText = `You used ${ability.name}!`;
-      }
 
+        // Auto-return to overworld (single-fight flow) after short delay so player sees win text/animation
+        setTimeout(() => {
+          const params = new URLSearchParams();
+          if (character) {
+            // update character with new gold/HP before sending
+            character.currentHp = playerHP;
+            character.gold = playerGold;
+            params.set("character", encodeURIComponent(JSON.stringify(character)));
+          }
+          params.set("region_type", regionKey);
+          location.href = `overworld.html?${params.toString()}`;
+        }, 1500);
+      }
+    }
+
+    function move(name, dmg, heal) {
+      let text = `You used ${name}! `;
+      if (dmg) {
+        enemyHP -= dmg;
+        if (enemyHP < 0) enemyHP = 0;   // ✅ prevent negative HP
+        text += `${enemyName} took ${dmg} damage. `;
+      }
+      if (heal) {
+        const healed = Math.min(heal, playerMaxHP - playerHP);
+        playerHP += healed;
+        text += `You healed for ${healed} HP. `;
+      }
+      document.getElementById("battleText").innerText = text;
       updateEnemyDisplay();
       updatePlayerDisplay();
+    }
+
+    function enemyMove(name, dmg, heal) {
+      let text = `${enemyName} used ${name}! `;
+      if (dmg) {
+        playerHP -= dmg;
+        if (playerHP < 0) playerHP = 0; // cap
+        text += `You took ${dmg} damage. `;
+      }
+      if (heal) {
+        enemyHP += heal;
+        if (enemyHP > (randomEnemy.hp ?? enemyHP)) enemyHP = randomEnemy.hp; // ✅ cap heal at max if available
+        text += `${enemyName} healed ${heal} HP.`;
+      }
+      document.getElementById("battleText").innerText = text;
+      updateEnemyDisplay();
+      updatePlayerDisplay();
+    }
+
+    window.playerAttack = function (index) {
+      const a = playerAbilities[index]; if (!a) return;
+      // prevent double-clicking / spamming
+      disableAttacks();
+
+      move(a.name, a.damage, a.heal);
+      if (enemyHP <= 0) { checkBattleOutcome(); return; }
+
+      setTimeout(() => {
+        enemyImage = (randomEnemy.animations && randomEnemy.animations.attack) ? randomEnemy.animations.attack : enemyImage;
+        updateEnemyDisplay();
+        setTimeout(() => {
+          const e = enemyAbilities[Math.floor(Math.random() * enemyAbilities.length)] || { name: "Swipe", damage: 5, heal: 0 };
+          enemyMove(e.name, e.damage, e.heal);
+          setTimeout(() => {
+            enemyImage = (randomEnemy.animations && randomEnemy.animations.idle) ? randomEnemy.animations.idle : enemyImage;
+            updateEnemyDisplay();
+            checkBattleOutcome();
+            if (playerHP > 0 && enemyHP > 0) enableAttacks();
+          }, 400);
+        }, 700);
+      }, 400);
     };
 
-    // Exit → overworld.html
+    // Exit button returns to overworld immediately (preserving character state)
     document.getElementById("exit-btn").addEventListener("click", () => {
       const params = new URLSearchParams();
       if (character) params.set("character", encodeURIComponent(JSON.stringify(character)));
@@ -248,10 +351,12 @@
       location.href = `overworld.html?${params.toString()}`;
     });
 
-    // ESC key exits
+    // ESC key
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") document.getElementById("exit-btn").click();
     });
   </script>
+  <script src="../assets/js/cursor.js"></script>
 </body>
+
 </html>
