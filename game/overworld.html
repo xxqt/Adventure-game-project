@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Overworld</title>
-  <link rel="stylesheet" href="overworld.css">
+  <link rel="stylesheet" href="./styles/overworld.css">
 </head>
 
 <body>
@@ -50,7 +50,7 @@
     <button data-region="dungeon">Enter Dungeon</button>
     <button data-region="shop">Visit Shop</button>
   </div>
-  <script src="../assets/js/regions.js"></script>
+  <script src="./js/regions.js"></script>
   <script>
     const buttonSound = new Audio("../assets/sound/button_sound.mp3");
     const qs = new URLSearchParams(window.location.search);
@@ -133,7 +133,7 @@
       });
     })();
   </script>
-  <script src="../assets/js/cursor.js"></script>
+  <script src="./js/cursor.js"></script>
 </body>
 
 </html>

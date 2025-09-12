@@ -1,13 +1,13 @@
 @font-face {
   font-family: "PixelifySans";
-  src: url("../assets/font/PixelifySans-Regular.ttf") format("truetype");
+  src: url("../../assets/font/PixelifySans-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 body {
   font-family: "PixelifySans", Arial, sans-serif;
-  background: url("../assets/sprites/game_background.png") no-repeat center center fixed;
+  background: url("../../assets/sprites/game_background.png") no-repeat center center fixed;
   background-size: cover;
   margin: 0;
   padding: 20px;
@@ -16,7 +16,7 @@ body {
 
 h1 {
   display: inline-block; /* shrink-wrap to text */
-  background: url("../assets/sprites/title.png") no-repeat center center;
+  background: url("../../assets/sprites/title.png") no-repeat center center;
   background-size: 100% 100%; /* stretch both horizontally and vertically */
   padding: 20px 40px; /* add top/bottom and left/right breathing room */
   color: white; /* make text visible */
@@ -31,7 +31,7 @@ h1 {
 
 .character-card {
   position: relative; /* enable absolute children */
-  background: url("../assets/sprites/card_background.png") no-repeat center center;
+  background: url("../../assets/sprites/card_background.png") no-repeat center center;
   background-size: 100% 100%;
   border-radius: 12px;
   text-align: center;

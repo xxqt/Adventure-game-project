@@ -1,6 +1,6 @@
 @font-face {
   font-family: "PixelifySans";
-  src: url("../assets/font/PixelifySans-Regular.ttf") format("truetype");
+  src: url("../../assets/font/PixelifySans-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -8,7 +8,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: url("../assets/overworld.png") no-repeat center center fixed;
+  background: url("../../assets/overworld.png") no-repeat center center fixed;
   background-size: cover;
   font-family: "PixelifySans", sans-serif;
   color: white;
@@ -28,7 +28,7 @@ body {
 }
 
 #enemy-info {
-  background-image: url("../assets/sprites/card_background.png");
+  background-image: url("../../assets/sprites/card_background.png");
   background-size: contain;
   /* Scales image to cover entire div */
   background-position: center;
@@ -114,7 +114,7 @@ body {
 }
 
 .attack-btn {
-  background-image: url('../assets/sprites/select_button.png');
+  background-image: url('../../assets/sprites/select_button.png');
   background-size: contain;
   /* Show full button shape without cropping */
   background-position: center;

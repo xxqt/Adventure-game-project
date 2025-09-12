@@ -1,13 +1,13 @@
 @font-face {
     font-family: "PixelifySans";
-    src: url("../assets/font/PixelifySans-Regular.ttf") format("truetype");
+    src: url("../../assets/font/PixelifySans-Regular.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
 }
 
 body {
     font-family: "PixelifySans", Arial, sans-serif;
-    background: url("../assets/overworld.png") no-repeat center center fixed;
+    background: url("../../assets/overworld.png") no-repeat center center fixed;
     background-size: cover;
     margin: 0;
     padding: 20px;
@@ -124,7 +124,7 @@ img {
 
 .shop-card {
     position: relative;
-    background: url("../assets/sprites/card_background.png") no-repeat center center;
+    background: url("../../assets/sprites/card_background.png") no-repeat center center;
     background-size: 100% 100%;
     border-radius: 8px;
     text-align: center;
