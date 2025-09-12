@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Temple Battle 2</title>
   <link rel="stylesheet" href="battle.css" />
   <style>
@@ -24,7 +24,9 @@
       text-align: center;
     }
 
-    h1 { margin: 12px 0; }
+    h1 {
+      margin: 12px 0;
+    }
 
     #battle-layout {
       width: min(100%, calc(var(--scene-w) + var(--side-w) + var(--gap) + 24px));
@@ -36,7 +38,11 @@
       align-items: start;
     }
 
-    @media (max-width:1100px) { #battle-layout { grid-template-columns: 1fr; } }
+    @media (max-width:1100px) {
+      #battle-layout {
+        grid-template-columns: 1fr;
+      }
+    }
 
     .scene {
       position: relative;
@@ -91,21 +97,27 @@
       box-sizing: border-box;
     }
 
-    #sidebar { display: grid; gap: var(--gap); }
+    #sidebar {
+      display: grid;
+      gap: var(--gap);
+    }
 
-    #enemy-info, #character-info {
+    #enemy-info,
+    #character-info {
       background: rgba(0, 0, 0, .75);
       padding: 12px;
       border-radius: 8px;
       text-align: left;
     }
 
-    #ability-buttons, #control-buttons {
+    #ability-buttons,
+    #control-buttons {
       display: grid;
       gap: 10px;
     }
 
-    .attack-btn, .action-btn {
+    .attack-btn,
+    .action-btn {
       padding: 10px 12px;
       border: 2px solid #3a4a5f;
       background: #16212e;
@@ -114,7 +126,10 @@
       cursor: pointer;
     }
 
-    .disabled { opacity: 0.5; pointer-events: none; }
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   </style>
 </head>
 
@@ -151,8 +166,8 @@
       </div>
 
       <div id="control-buttons">
-        <button id="run-btn" class="action-btn">Run</button>
         <button id="next-btn" class="action-btn disabled">Next</button>
+        <button id="run-btn" class="action-btn">Run</button>
       </div>
     </div>
   </div>
@@ -306,20 +321,21 @@
       }, 400);
     };
 
+
+
+    // Exit button
+    document.getElementById("run-btn").addEventListener("click", () => {
+      const params = new URLSearchParams();
+      if (character) params.set("character", encodeURIComponent(JSON.stringify(character)));
+      params.set("region_type", regionKey);
+      location.href = `overworld.html?${params.toString()}`;
+    });
     // Next button → blessing.html
     document.getElementById("next-btn").addEventListener("click", () => {
       const params = new URLSearchParams();
       if (character) params.set("character", encodeURIComponent(JSON.stringify(character)));
       params.set("region_type", regionKey);
       location.href = `blessing.html?${params.toString()}`;
-    });
-
-    // Exit button
-    document.getElementById("Run-btn").addEventListener("click", () => {
-      const params = new URLSearchParams();
-      if (character) params.set("character", encodeURIComponent(JSON.stringify(character)));
-      params.set("region_type", regionKey);
-      location.href = `overworld.html?${params.toString()}`;
     });
 
     // ESC key
@@ -329,4 +345,5 @@
   </script>
   <script src="../assets/js/cursor.js"></script>
 </body>
+
 </html>
