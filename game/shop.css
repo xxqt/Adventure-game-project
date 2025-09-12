@@ -145,7 +145,8 @@ img {
 }
 
 .card-bg {
-    display: none; /* Hide since we're using background image */
+    display: none;
+    /* Hide since we're using background image */
 }
 
 .item-info {
