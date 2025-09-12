@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Forest Battle</title>
+  <title>Forest</title>
   <link rel="stylesheet" href="battle.css" />
   <style>
     :root {
@@ -12,8 +11,8 @@
       --scene-h: 504px;
       --side-w: 320px;
       --gap: 16px;
-      --monster-scale: 6.5;
-      --monster-nudge: 280px;
+      --monster-scale: 7;
+      --monster-nudge: 300px;
     }
 
     body {
@@ -113,11 +112,13 @@
       border-radius: 10px;
       cursor: pointer;
     }
+
+    .disabled { opacity: 0.5; pointer-events: none; }
   </style>
 </head>
 
 <body>
-  <h1>Forest Battle</h1>
+  <h1>Forest</h1>
 
   <div id="battle-layout">
     <div id="left">
@@ -126,9 +127,7 @@
         <img id="enemy-image" alt="Enemy" />
         <div class="frame-border"></div>
       </div>
-      <div id="console">
-        <p id="battleText">A forest enemy appears!</p>
-      </div>
+      <div id="console"><p id="battleText">A Forest enemy approaches!</p></div>
     </div>
 
     <div id="sidebar">
@@ -139,17 +138,17 @@
 
       <div id="character-info">
         <h3 id="player-name"></h3>
-        <p>HP: <span id="player-hp"></span> / <span id="player-maxhp"></span></p>
+        <p>HP: <span id="player-hp"></span></p>
         <p>Gold: <span id="player-gold"></span></p>
       </div>
 
       <div id="ability-buttons">
-        <button class="attack-btn" id="ability-0" onclick="playerAttack(0)"></button>
-        <button class="attack-btn" id="ability-1" onclick="playerAttack(1)"></button>
+        <button class="attack-btn" onclick="playerAttack(0)">Attack 1</button>
+        <button class="attack-btn" onclick="playerAttack(1)">Attack 2</button>
       </div>
 
       <div id="control-buttons">
-        <button id="exit-btn" class="action-btn">Exit</button>
+        <button id="run-btn" class="action-btn">Run</button>
       </div>
     </div>
   </div>
@@ -164,8 +163,7 @@
     const charData = qs.get("character");
     let character = charData ? JSON.parse(decodeURIComponent(charData)) : null;
 
-    let playerHP = character?.currentHp ?? 100;
-    let playerMaxHP = character?.maxHp ?? 100;
+    let playerHP   = character?.currentHp ?? 100;
     let playerGold = character?.gold ?? 0;
     let playerName = character?.name ?? "Hero";
     let playerAbilities = character?.abilities ?? [
@@ -173,85 +171,103 @@
       { name: "Guard", heal: 5 }
     ];
 
+    // Fill player UI
     document.getElementById("player-name").textContent = playerName;
-    document.getElementById("player-hp").textContent = playerHP;
-    document.getElementById("player-maxhp").textContent = playerMaxHP;
+    document.getElementById("player-hp").textContent   = playerHP;
     document.getElementById("player-gold").textContent = playerGold;
 
-    // Ability labels
-    playerAbilities.forEach((ability, i) => {
-      const btn = document.getElementById(`ability-${i}`);
-      if (ability && ability.name) btn.textContent = ability.name;
-      else btn.style.display = "none";
+    // Ability buttons
+    document.querySelectorAll(".attack-btn").forEach((btn, i) => {
+      const a = playerAbilities[i];
+      if (a) btn.textContent = a.name; else btn.style.display = "none";
     });
 
-    // Background
+    // Region background
     const regionCfg = regions[regionKey];
-    const regionBg = regionCfg?.battleBg ?? "../assets/sprites/game_background.png";
+    const regionBg  = regionCfg?.battleBg ?? "../assets/sprites/game_background.png";
     document.getElementById("region-bg").style.backgroundImage = `url("${regionBg}")`;
 
-    // Enemy selection
+    // Enemy pool
     const catalog = enemies.enemies || [];
-    const pool = regionCfg?.monstersByName?.length ?
-      catalog.filter(e => regionCfg.monstersByName.includes(e.name)) :
-      catalog.slice();
+    const pool = regionCfg?.monstersByName?.length
+      ? catalog.filter(e => regionCfg.monstersByName.includes(e.name))
+      : catalog.slice();
 
-    let enemy = pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : {
-      name: "Training Dummy",
-      hp: 1,
-      animations: { idle: "../assets/sprites/dummy.png", death: "../assets/sprites/dummy_dead.png" }
-    };
+    if (!pool.length) {
+      document.getElementById("enemy-name").textContent = "No enemies";
+      document.getElementById("battleText").textContent = "This area is safe.";
+      document.querySelectorAll(".attack-btn").forEach(b => b.disabled = true);
+    } else {
+      // Enemy setup
+      const enemy = pool[Math.floor(Math.random() * pool.length)];
+      let enemyHP = enemy.hp;
+      let monsterDefeated = false;
 
-    let enemyHP = enemy.hp;
-    let monsterDefeated = false;
+      document.getElementById("enemy-name").textContent = enemy.name;
+      document.getElementById("enemy-hp").textContent   = enemyHP;
+      document.getElementById("enemy-image").src        = enemy.animations.idle;
 
-    document.getElementById("enemy-name").textContent = enemy.name;
-    document.getElementById("enemy-hp").textContent = enemyHP;
-    document.getElementById("enemy-image").src = enemy.animations.idle;
-
-    function updateEnemyDisplay() {
-      document.getElementById("enemy-hp").textContent = enemyHP;
-      document.getElementById("enemy-image").src = monsterDefeated ? enemy.animations.death : enemy.animations.idle;
-    }
-
-    function updatePlayerDisplay() {
-      document.getElementById("player-hp").textContent = playerHP;
-      document.getElementById("player-gold").textContent = playerGold;
-      if (character) { character.currentHp = playerHP; character.gold = playerGold; }
-    }
-
-    window.playerAttack = function(index) {
-      if (monsterDefeated) return;
-      const ability = playerAbilities[index];
-      if (!ability) return;
-
-      if (ability.damage) enemyHP -= ability.damage;
-      if (ability.heal) playerHP = Math.min(playerHP + ability.heal, playerMaxHP);
-
-      if (enemyHP <= 0) {
-        enemyHP = 0;
-        monsterDefeated = true;
-        document.getElementById("battleText").innerText = `You defeated ${enemy.name}!`;
-      } else {
-        document.getElementById("battleText").innerText = `You used ${ability.name}!`;
+      function updateEnemyDisplay() {
+        document.getElementById("enemy-hp").textContent = enemyHP;
+        document.getElementById("enemy-image").src = monsterDefeated ? enemy.animations.death : enemy.animations.idle;
+      }
+      function updatePlayerDisplay() {
+        document.getElementById("player-hp").textContent   = playerHP;
+        document.getElementById("player-gold").textContent = playerGold;
+        if (character) { character.currentHp = playerHP; character.gold = playerGold; }
       }
 
-      updateEnemyDisplay();
-      updatePlayerDisplay();
-    };
+      window.playerAttack = function(index) {
+        if (monsterDefeated || playerHP <= 0) return;
+        const ability = playerAbilities[index];
+        if (!ability) return;
 
-    // Exit → overworld.html
-    document.getElementById("exit-btn").addEventListener("click", () => {
+        let battleText = `You used ${ability.name}! `;
+
+        if (ability.damage) {
+          enemyHP -= ability.damage;
+          battleText += `${enemy.name} took ${ability.damage} damage. `;
+        }
+        if (ability.heal) {
+          const healed = Math.min(ability.heal, 100 - playerHP);
+          playerHP += healed;
+          battleText += `You healed for ${healed} HP. `;
+        }
+
+        if (enemyHP <= 0) {
+          enemyHP = 0;
+          monsterDefeated = true;
+          playerGold += enemy.gold ?? 0;
+          battleText = `You defeated ${enemy.name}! You gained ${enemy.gold ?? 0} gold.`;
+        } else {
+          // Enemy strikes back
+          const dmg = enemy.attack ?? 5;
+          playerHP -= dmg;
+          if (playerHP < 0) playerHP = 0;
+          battleText += `${enemy.name} strikes back for ${dmg} damage!`;
+
+          if (playerHP <= 0) {
+            battleText = `You were defeated by ${enemy.name}...`;
+            document.querySelectorAll(".attack-btn").forEach(b => b.disabled = true);
+          }
+        }
+
+        document.getElementById("battleText").innerText = battleText;
+        updateEnemyDisplay();
+        updatePlayerDisplay();
+      };
+    }
+
+    // Run button → back to overworld
+    document.getElementById("run-btn").addEventListener("click", () => {
       const params = new URLSearchParams();
       if (character) params.set("character", encodeURIComponent(JSON.stringify(character)));
       params.set("region_type", regionKey);
       location.href = `overworld.html?${params.toString()}`;
     });
 
-    // ESC key exits
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") document.getElementById("exit-btn").click();
-    });
+    // ESC shortcut
+    window.addEventListener("keydown", (e) => { if (e.key === "Escape") document.getElementById("run-btn").click(); });
   </script>
 </body>
 </html>
